@@ -24,7 +24,7 @@ private static UserDAO dao = null;
 		StringBuilder sql = new StringBuilder();
 		sql.append(
 				"INSERT INTO account (id, fullname, email, password, role, status, created_date, created_by, updated_date, updated_by)");
-		sql.append(" VALUE (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		sql.append(" VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 		return excute(sql.toString(), model.getId(), model.getFullName(), model.getEmail(), model.getPassword(), model.getRole(),
 				model.getStatus(), model.getCreateDate(), model.getCreateBy(), model.getUpdateDate(),
 				model.getUpdateBy());
