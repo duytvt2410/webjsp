@@ -86,7 +86,7 @@ public class StoreController extends HttpServlet {
 				}
 				listProduct = productService.findAllCustomCondition(sqlConditon, "dien-thoai", "active", ids);
 			} catch (Exception e) {
-				listProduct = productService.findAllCustomCondition("", "dien-thoai", "active", null);
+				listProduct = productService.findAllCustomCondition("", "dien-thoai", "active", arrPararameter);
 			}
 
 		} else if (url.startsWith(request.getContextPath() + "/laptop")) {
@@ -102,7 +102,7 @@ public class StoreController extends HttpServlet {
 				}
 				listProduct = productService.findAllCustomCondition(sqlConditon, "laptop", "active", ids);
 			} catch (Exception e) {
-				listProduct = productService.findAllCustomCondition("", "laptop", "active", null);
+				listProduct = productService.findAllCustomCondition("", "laptop", "active", arrPararameter);
 			}
 
 		} else if (url.startsWith(request.getContextPath() + "/phukien")) {
@@ -121,7 +121,7 @@ public class StoreController extends HttpServlet {
 					}
 					listProduct = productService.findAllCustomCondition(sqlConditon, theloai, "active", ids);
 				} catch (Exception e) {
-					listProduct = productService.findAllCustomCondition("", theloai, "active", null);
+					listProduct = productService.findAllCustomCondition("", theloai, "active", arrPararameter);
 				}
 			} else {
 				if(listCategory != null) {
@@ -137,7 +137,7 @@ public class StoreController extends HttpServlet {
 						}
 						listProduct = productService.findAllCustomCondition(sqlConditon, listCategory.get(0).getAlias(), "active", ids);
 					} catch (Exception e) {
-						listProduct = productService.findAllCustomCondition("", listCategory.get(0).getAlias(), "active", null);
+						listProduct = productService.findAllCustomCondition("", listCategory.get(0).getAlias(), "active", arrPararameter);
 					}
 				}
 			}

@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,36 +15,38 @@ import mapper.RowMapper;
 
 public class AbstactDAO<T> implements IGenericDAO<T> {
 	
-	public static Connection getConnection() {
-
-		try {
-			Class.forName("org.postgresql.Driver");
-			String username = "xohiyrwycgepgl";
-			String password = "bb64e9c291f3fefbe15b13990e77312f22049ed37ee261087a3ad4b8401dff71";
-			String dbUrl = "jdbc:postgresql://"+"ec2-107-22-241-205.compute-1.amazonaws.com"+"/deqli4qc01qmfn";
-
-			return DriverManager.getConnection(dbUrl, username, password);
-		} catch (SQLException | ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
-	
-	}
 //	public static Connection getConnection() {
 //
 //		try {
-//			Class.forName("com.mysql.cj.jdbc.Driver");
+//			Class.forName("org.postgresql.Driver");
+//			String username = "xohiyrwycgepgl";
+//			String password = "bb64e9c291f3fefbe15b13990e77312f22049ed37ee261087a3ad4b8401dff71";
+//			String dbUrl = "jdbc:postgresql://"+"ec2-107-22-241-205.compute-1.amazonaws.com"+"/deqli4qc01qmfn";
 //
-//			return DriverManager.getConnection(
-//					"jdbc:mysql://localhost:3306/webjsp?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC",
-//					"root", "");
+//			return DriverManager.getConnection(dbUrl, username, password);
 //		} catch (SQLException | ClassNotFoundException e) {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
 //		return null;
+//	
 //	}
+	
+	
+	public static Connection getConnection() {
+
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+
+			return DriverManager.getConnection(
+					"jdbc:mysql://localhost:3306/webjsp?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC",
+					"root", "");
+		} catch (SQLException | ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
 
 	@Override
 	public List<T> query(String sql, RowMapper<T> rowMapper, Object... parameters) {
@@ -139,6 +142,8 @@ public class AbstactDAO<T> implements IGenericDAO<T> {
 						statement.setLong(index, sss[j]);
 						index++;
 					}
+				} else if (parameter == null) {
+					statement.setNull(index, Types.NULL);
 				}
 			}
 		} catch (SQLException e) {
