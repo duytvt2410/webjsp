@@ -79,7 +79,7 @@
                     		<td><input type="checkbox"></td>
                      		<td><%= product.getName() %></td>
 							<td><%= Utils.convertToVND(product.getPrice()) %></td>
-							<td><img style="height: 70px" src="<%=Utils.getPath(product.getImageProduct().getUrl())%>"></td>
+							<td><img style="height: 70px" src="data:image/jpg;base64,<%=product.getImageProduct().getBase64Image()%>"></td>
 							<td><%= (product.getStatus().equalsIgnoreCase("active") ? "<i class='fas fa-check-square text-success'></i>" : "<i class='fas fa-ban text-danger'></i>") %></td>
 							<td><%= product.getCreateBy() %></td>
 							<td><%= product.getCreateDate() %></td>

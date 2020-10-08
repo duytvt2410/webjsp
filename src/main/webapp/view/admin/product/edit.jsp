@@ -156,7 +156,7 @@
 						<input id="image" class="form-control" name="file-image" type="file" accept="image/*">
 							<div id="showImage">
 								<% if(product != null ) { %>
-								<img style="height: 70px" width="auto" src="<%=Utils.getPath(product.getImageProduct().getUrl()) %>" class="img-thumbnail">
+								<img style="height: 70px" width="auto" src="data:image/jpg;base64,<%=product.getImageProduct().getBase64Image() %>" class="img-thumbnail">
 								<%} %>
 							</div>
 							
@@ -169,7 +169,7 @@
 									for(ImagesModel images : product.getImagesDetail()) {
 								%>
 									
-								<img style="height: 70px" width="auto" src="<%=Utils.getPath(images.getUrl()) %>" class="img-thumbnail">
+								<img style="height: 70px" width="auto" src="data:image/jpg;base64,<%=images.getBase64Image() %>" class="img-thumbnail">
 								<%	} 
 									}
 								%>
@@ -205,7 +205,7 @@
 						</div>
 					    <input type="hidden" value="edit" name="option">
 					     <input type="hidden" value="<%=product.getId() %>" name="id">
-					    <button type="submit" class="btn btn-primary">Thêm</button>
+					    <button type="submit" class="btn btn-primary">Sửa</button>
 					  </form>
 					</div>
                 </div>

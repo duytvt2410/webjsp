@@ -80,7 +80,7 @@
 										<% for(ProductModel productInCart : cart.list()) { %>
 											<div class="product-widget">
 												<div class="product-img">
-													<img src="<%= Utils.getPath(productInCart.getImageProduct().getUrl()) %>" alt="">
+													<img src="data:image/jpg;base64,<%= productInCart.getImageProduct().getBase64Image()%>" alt="">
 												</div>
 												<div class="product-body">
 													<h3 class="product-name"><a href="#"><%= productInCart.getName() %></a></h3>

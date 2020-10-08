@@ -1,6 +1,5 @@
 package service.imp;
 
-import java.io.File;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashMap;
@@ -165,6 +164,8 @@ public class ProductService implements IProductService {
 		model.setCreateBy("admin");
 		model.setUpdateDate(null);
 		model.setUpdateBy("");
+		
+		
 
 		Random rand = new Random();
 		String id = String.valueOf(rand.nextInt(101) + 100);
@@ -173,12 +174,6 @@ public class ProductService implements IProductService {
 		model.setId(Long.parseLong(id));
 
 		if (productDAO.insert(model) == true) {
-
-			String url_folderImage = "images" + File.separator + "product" + File.separator + brand.getCategoryName()
-					+ File.separator + brand.getName() + File.separator + model.getId() + File.separator;
-
-			String url_folderImages = "images" + File.separator + "detail" + File.separator + brand.getCategoryName()
-					+ File.separator + brand.getName() + File.separator + model.getId() + File.separator;
 
 			try {
 				ImagesModel imageProduct = new ImagesModel();
@@ -190,20 +185,12 @@ public class ProductService implements IProductService {
 					if (type.equals("image")) {
 						imageProduct.setProduct_Id(model.getId());
 						imageProduct.setType("image_product");
-						imageProduct.setUrl(url_folderImage + model.getFieldsImageProduct().getName());
+						imageProduct.setInputImage(model.getFieldsImageProduct().getInputStream());
 					}
 				}
+				
+				imageService.insert(imageProduct);
 
-				if (imageService.insert(imageProduct) == true) {
-					File fi = new File("D:/apache-tomcat-8.5.51/webapps/" + url_folderImage);
-					if (!fi.exists()) {
-						fi.mkdirs();
-					}
-
-					model.getFieldsImageProduct()
-							.write(new File("D:/apache-tomcat-8.5.51/webapps/" + imageProduct.getUrl()));
-
-				}
 
 				if (model.getFieldsImagesDetail().size() > 0) {
 					String mimetype = model.getFieldsImageProduct().getContentType();
@@ -213,16 +200,8 @@ public class ProductService implements IProductService {
 							ImagesModel image = new ImagesModel();
 							image.setType("image_detail");
 							image.setProduct_Id(model.getId());
-							image.setUrl(url_folderImages + images.getName());
-
-							if (imageService.insert(image) == true) {
-								File fi = new File("D:/apache-tomcat-8.5.51/webapps/" + url_folderImages);
-								if (!fi.exists()) {
-									fi.mkdirs();
-								}
-
-								images.write(new File("D:/apache-tomcat-8.5.51/webapps/" + image.getUrl()));
-							}
+							image.setInputImage(images.getInputStream());
+							imageService.insert(image);
 						}
 
 					}
@@ -339,12 +318,6 @@ public class ProductService implements IProductService {
 
 		if (productDAO.update(model, id) == true) {
 
-			String url_folderImage = "images" + File.separator + "product" + File.separator + brand.getCategoryName()
-					+ File.separator + brand.getName() + File.separator + model.getId() + File.separator;
-
-			String url_folderImages = "images" + File.separator + "detail" + File.separator + brand.getCategoryName()
-					+ File.separator + brand.getName() + File.separator + model.getId() + File.separator;
-
 			try {
 				ImagesModel imageProduct = new ImagesModel();
 				imageProduct = new ImagesModel();
@@ -357,18 +330,10 @@ public class ProductService implements IProductService {
 						if (type.equals("image")) {
 							imageProduct.setProduct_Id(model.getId());
 							imageProduct.setType("image_product");
-							imageProduct.setUrl(url_folderImage + model.getFieldsImageProduct().getName());
+							imageProduct.setInputImage(model.getFieldsImageProduct().getInputStream());
 						}
+						imageService.insert(imageProduct);
 
-						if (imageService.insert(imageProduct) == true) {
-							File fi = new File("D:/apache-tomcat-8.5.51/webapps/" + url_folderImage);
-							if (!fi.exists()) {
-								fi.mkdirs();
-							}
-
-							model.getFieldsImageProduct()
-									.write(new File("D:/apache-tomcat-8.5.51/webapps/" + imageProduct.getUrl()));
-						}
 					}
 
 				}
@@ -383,16 +348,9 @@ public class ProductService implements IProductService {
 								ImagesModel image = new ImagesModel();
 								image.setType("image_detail");
 								image.setProduct_Id(model.getId());
-								image.setUrl(url_folderImages + images.getName());
-
-								if (imageService.insert(image) == true) {
-									File fi = new File("D:/apache-tomcat-8.5.51/webapps/" + url_folderImages);
-									if (!fi.exists()) {
-										fi.mkdirs();
-									}
-
-									images.write(new File("D:/apache-tomcat-8.5.51/webapps/" + image.getUrl()));
-								}
+								image.setInputImage(images.getInputStream());
+								imageService.insert(image);
+								
 							}
 
 						}

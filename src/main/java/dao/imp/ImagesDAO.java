@@ -20,9 +20,9 @@ private static ImagesDAO dao = null;
 	@Override
 	public boolean insert(ImagesModel model) {
 		StringBuilder sql = new StringBuilder();
-		sql.append("INSERT INTO images (id, product_id, type, url)");
+		sql.append("INSERT INTO images (id, product_id, type, photo)");
 		sql.append(" VALUES (?, ?, ?, ?)");
-		return excute(sql.toString(), model.getId(), model.getProduct_Id(), model.getType(), model.getUrl() );
+		return excute(sql.toString(), model.getId(), model.getProduct_Id(), model.getType(), model.getInputImage());
 	}
 
 	@Override

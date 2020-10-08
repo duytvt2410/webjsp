@@ -24,16 +24,6 @@ public class Utils{
 	    return "";
 	}
 	
-	public static String getPath(String url) {
-	   String root = "http://localhost:8080/";
-	    return root + url;
-	}
-	
-	public static String [] getFilter(String url) {
-		String[] s = {""};
-		if(url == null) return s;
-    	return url.split("14082410and14082410");
-    }
 	
 	public static String convertToVND(int money) {
 		DecimalFormat formatter = new DecimalFormat("###,###,###");

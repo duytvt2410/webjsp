@@ -23,14 +23,9 @@ public class ProductModel extends AbstractModel {
 	private ImagesModel imageProduct;
 
 	private List<FileItem> fieldsImagesDetail;
-
 	private FileItem fieldsImageProduct;
-	
 	private List<ImagesModel> imagesDetail;
-	
 	private List<ImagesModel> listImage;
-	
-	
 	private List<ProductClassifyModel> listClassify;
 
 	

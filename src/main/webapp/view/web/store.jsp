@@ -243,7 +243,7 @@
 							<div class="col-md-4 col-xs-6">
 								<div class="product">
 									<div class="product-img">
-										<img src="<%= Utils.getPath(product.getImageProduct().getUrl()) %>" alt="">
+										<img src="data:image/jpg;base64,<%= product.getImageProduct().getBase64Image() %>" alt="">
 										<div class="product-label">
 											<span class="sale">-30%</span>
 											<span class="new">NEW</span>

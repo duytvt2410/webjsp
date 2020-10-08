@@ -97,7 +97,7 @@
 										<!-- product -->
 										<div class="product">
 											<div class="product-img">
-												<img src="<%= Utils.getPath(product.getImageProduct().getUrl())  %>" alt="">
+												<img src="data:image/jpg;base64,<%= product.getImageProduct().getBase64Image()%>" alt="">
 												<div class="product-label">
 													<%= (product.getPricePromotional() != 0 ? "<span class='sale'>" + Utils.getDiscoutPercent(product.getPrice(), product.getPricePromotional()) + "</span>" : "" ) %>
 													<span class="new">NEW</span>
@@ -140,7 +140,7 @@
 										<!-- product -->
 										<div class="product">
 											<div class="product-img">
-												<img src="<%= Utils.getPath(product.getImageProduct().getUrl())  %>" alt="">
+												<img src="data:image/jpg;base64,<%= product.getImageProduct().getBase64Image()%>)  %>" alt="">
 												<div class="product-label">
 													<%= (product.getPricePromotional() != 0 ? "<span class='sale'>" + Utils.getDiscoutPercent(product.getPrice(), product.getPricePromotional()) + "</span>" : "" ) %>
 													<span class="new">NEW</span>
@@ -182,7 +182,7 @@
 										<!-- product -->
 										<div class="product">
 											<div class="product-img">
-												<img src="<%= Utils.getPath(product.getImageProduct().getUrl())  %>" alt="">
+												<img src="data:image/jpg;base64,<%= product.getImageProduct().getBase64Image()%>" alt="">
 												<div class="product-label">
 													<%= (product.getPricePromotional() != 0 ? "<span class='sale'>" + Utils.getDiscoutPercent(product.getPrice(), product.getPricePromotional()) + "</span>" : "" ) %>
 													<span class="new">NEW</span>
@@ -262,7 +262,7 @@
 										<!-- product -->
 										<div class="product">
 											<div class="product-img">
-												<img src="<%= Utils.getPath(product.getImageProduct().getUrl())  %>" alt="">
+												<img src="data:image/jpg;base64,<%= product.getImageProduct().getBase64Image()%>" alt="">
 												<div class="product-label">
 													<%= (product.getPricePromotional() != 0 ? "<span class='sale'>" + Utils.getDiscoutPercent(product.getPrice(), product.getPricePromotional()) + "</span>" : "" ) %>
 													<span class="new">NEW</span>
@@ -306,7 +306,7 @@
 										<!-- product -->
 										<div class="product">
 											<div class="product-img">
-												<img src="<%= Utils.getPath(product.getImageProduct().getUrl())  %>" alt="">
+												<img src="data:image/jpg;base64,<%= product.getImageProduct().getBase64Image()%>" alt="">
 												<div class="product-label">
 													<%= (product.getPricePromotional() != 0 ? "<span class='sale'>" + Utils.getDiscoutPercent(product.getPrice(), product.getPricePromotional()) + "</span>" : "" ) %>
 													<span class="new">NEW</span>
@@ -349,7 +349,7 @@
 										<!-- product -->
 										<div class="product">
 											<div class="product-img">
-												<img src="<%= Utils.getPath(product.getImageProduct().getUrl())  %>" alt="">
+												<img src="data:image/jpg;base64,<%= product.getImageProduct().getBase64Image()%>" alt="">
 												<div class="product-label">
 													<%= (product.getPricePromotional() != 0 ? "<span class='sale'>" + Utils.getDiscoutPercent(product.getPrice(), product.getPricePromotional()) + "</span>" : "" ) %>
 													<span class="new">NEW</span>
