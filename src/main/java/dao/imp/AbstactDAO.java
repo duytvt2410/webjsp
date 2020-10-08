@@ -123,6 +123,39 @@ public class AbstactDAO<T> implements IGenericDAO<T> {
 		}
 	}
 
+//	private void setParameter(PreparedStatement statement, Object... parameters) {
+//		
+//		try {
+//			for (int i = 0; i < parameters.length; i++) {
+//				Object parameter = parameters[i];
+//				int index = i + 1;
+//				if (parameter instanceof Long) {
+//					statement.setLong(index, (Long) parameter);
+//				} else if (parameter instanceof String) {
+//					statement.setString(index, (String) parameter);
+//				} else if (parameter instanceof Integer) {
+//					statement.setInt(index, (Integer) parameter);
+//				} else if (parameter instanceof Timestamp) {
+//					statement.setTimestamp(index, (Timestamp) parameter);
+//				} else if(parameter instanceof Long []) {
+//					Long sss[] = (Long []) parameter;
+//					for(int j = 0; j < sss.length; j++) {
+//						statement.setLong(index, sss[j]);
+//						index++;
+//					}
+//				} else if (parameter == null) {
+//					statement.setNull(index, Types.NULL);
+//				} else if(parameter instanceof InputStream) {
+//					statement.setBlob(index, (InputStream) parameter);
+//				}
+//			}
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		}
+//	}
+
+	
+	
 	private void setParameter(PreparedStatement statement, Object... parameters) {
 		
 		try {
@@ -146,13 +179,12 @@ public class AbstactDAO<T> implements IGenericDAO<T> {
 				} else if (parameter == null) {
 					statement.setNull(index, Types.NULL);
 				} else if(parameter instanceof InputStream) {
-					statement.setBlob(index, (InputStream) parameter);
+					statement.setBinaryStream(index, (InputStream) parameter);
 				}
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
-	
 	
 }
