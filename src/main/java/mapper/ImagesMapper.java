@@ -15,7 +15,7 @@ public class ImagesMapper implements RowMapper<ImagesModel> {
 			model.setId(resultSet.getLong("id"));
 			model.setType(resultSet.getString("type"));
 			model.setProduct_Id(resultSet.getLong("product_id"));
-			model.setInputImage(resultSet.getBinaryStream("photo"));
+			model.setByteImage(resultSet.getBytes("photo"));
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			return null;

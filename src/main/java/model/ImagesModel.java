@@ -1,5 +1,6 @@
 package model;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,6 +14,10 @@ public class ImagesModel {
 	private String type;
 	private InputStream inputImage;
 	private byte [] byteImage;
+	public void setByteImage(byte[] byteImage) {
+		this.byteImage = byteImage;
+	}
+
 	public Long getProduct_Id() {
 		return product_Id;
 	}
@@ -67,7 +72,7 @@ public class ImagesModel {
 		String base64Image = "";
 		try {
 			InputStream inputStream;
-			inputStream = this.inputImage;
+			inputStream = new ByteArrayInputStream(this.byteImage);
 
 			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 			byte[] buffer = new byte[4096];

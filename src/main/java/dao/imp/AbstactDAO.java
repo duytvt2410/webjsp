@@ -179,7 +179,7 @@ public class AbstactDAO<T> implements IGenericDAO<T> {
 				} else if (parameter == null) {
 					statement.setNull(index, Types.NULL);
 				} else if(parameter instanceof byte[]) {
-					statement.setBytes(index, null);
+					statement.setBytes(index, (byte[]) parameter);
 				}
 			}
 		} catch (SQLException e) {
