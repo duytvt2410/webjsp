@@ -2,6 +2,8 @@ package dao.imp;
 
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
+
 import dao.InterfaceImagesDAO;
 import mapper.ImagesMapper;
 import model.ImagesModel;
@@ -22,7 +24,7 @@ private static ImagesDAO dao = null;
 		StringBuilder sql = new StringBuilder();
 		sql.append("INSERT INTO images (id, product_id, type, photo)");
 		sql.append(" VALUES (?, ?, ?, ?)");
-		return excute(sql.toString(), model.getId(), model.getProduct_Id(), model.getType(), model.getInputImage());
+		return excute(sql.toString(), model.getId(), model.getProduct_Id(), model.getType(), model.getByteImage());
 	}
 
 	@Override

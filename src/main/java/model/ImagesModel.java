@@ -5,12 +5,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Base64;
 
+import org.apache.commons.io.IOUtils;
+
 public class ImagesModel {
 	private Long id;
 	private Long product_Id;
 	private String type;
 	private InputStream inputImage;
-
+	private byte [] byteImage;
 	public Long getProduct_Id() {
 		return product_Id;
 	}
@@ -95,4 +97,15 @@ public class ImagesModel {
 		this.inputImage = inputImage;
 	}
 
+
+	public byte[] getByteImage() {
+		byte[] b = null;
+		try {
+			b = IOUtils.toByteArray(this.inputImage);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return b;
+	}
 }
