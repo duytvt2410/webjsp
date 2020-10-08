@@ -92,8 +92,10 @@
 								<!-- tab -->
 								<div id="tab1" class="tab-pane active">
 									<div class="products-slick" data-nav="#slick-nav-1">
-									
-									<% for(ProductModel product : listProductIsPhone) { %>
+								
+									<% 
+									if(listProductIsPhone != null) { 
+									for(ProductModel product : listProductIsPhone) { %>
 										<!-- product -->
 										<div class="product">
 											<div class="product-img">
@@ -124,7 +126,9 @@
 											</div>
 										</div>
 										<!-- /product -->
-									<% } %>
+									<% } 
+									}
+									%>
 										
 									</div>
 									<div id="slick-nav-1" class="products-slick-nav"></div>
@@ -136,7 +140,9 @@
 								<div id="tab2" class="tab-pane">
 									<div class="products-slick" data-nav="#slick-nav-2">
 									
-									<% for(ProductModel product : listProductIsLaptop) { %>
+									<% 
+										if(listProductIsLaptop != null) {
+									for(ProductModel product : listProductIsLaptop) { %>
 										<!-- product -->
 										<div class="product">
 											<div class="product-img">
@@ -167,7 +173,9 @@
 											</div>
 										</div>
 										<!-- /product -->
-									<% } %>
+									<% } 
+									}
+									%>
 										
 									</div>
 									<div id="slick-nav-2" class="products-slick-nav"></div>
@@ -178,7 +186,9 @@
 								<div id="tab3" class="tab-pane">
 									<div class="products-slick" data-nav="#slick-nav-3">
 									
-									<% for(ProductModel product : listProductIsAccessories) { %>
+									<% 
+									if(listProductIsAccessories != null) {
+									for(ProductModel product : listProductIsAccessories) { %>
 										<!-- product -->
 										<div class="product">
 											<div class="product-img">
@@ -209,7 +219,9 @@
 											</div>
 										</div>
 										<!-- /product -->
-									<% } %>
+									<% } 
+									}
+									%>
 										
 									</div>
 									<div id="slick-nav-3" class="products-slick-nav"></div>
@@ -258,7 +270,9 @@
 								<div id="tab4" class="tab-pane active">
 									<div class="products-slick" data-nav="#slick-nav-4">
 									
-									<% for(ProductModel product : listProductIsPhoneDiscount) { %>
+									<% 
+									if(listProductIsPhoneDiscount != null) {
+									for(ProductModel product : listProductIsPhoneDiscount) { %>
 										<!-- product -->
 										<div class="product">
 											<div class="product-img">
@@ -290,7 +304,9 @@
 											</div>
 										</div>
 										<!-- /product -->
-									<% } %>
+									<% } 
+									}
+									%>
 										
 									</div>
 									<div id="slick-nav-4" class="products-slick-nav"></div>
@@ -302,7 +318,9 @@
 								<div id="tab5" class="tab-pane">
 									<div class="products-slick" data-nav="#slick-nav-5">
 									
-									<% for(ProductModel product : listProductIsLaptopDiscount) { %>
+									<% 
+										if(listProductIsLaptopDiscount != null) {
+										for(ProductModel product : listProductIsLaptopDiscount) { %>
 										<!-- product -->
 										<div class="product">
 											<div class="product-img">
@@ -334,7 +352,9 @@
 											</div>
 										</div>
 										<!-- /product -->
-									<% } %>
+									<% } 
+									}
+									%>
 										
 									</div>
 									<div id="slick-nav-5" class="products-slick-nav"></div>
@@ -345,7 +365,9 @@
 								<div id="tab6" class="tab-pane">
 									<div class="products-slick" data-nav="#slick-nav-6">
 									
-									<% for(ProductModel product : listProductIsAccessoriesDiscount) { %>
+									<%
+									if(listProductIsAccessoriesDiscount != null) {
+									for(ProductModel product : listProductIsAccessoriesDiscount) { %>
 										<!-- product -->
 										<div class="product">
 											<div class="product-img">
@@ -377,7 +399,9 @@
 											</div>
 										</div>
 										<!-- /product -->
-									<% } %>
+									<% }
+									}
+									%>
 										
 									</div>
 									<div id="slick-nav-6" class="products-slick-nav"></div>
