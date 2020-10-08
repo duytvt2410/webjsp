@@ -64,7 +64,7 @@ public class ImagesModel {
 //	}
 	
 	public String getBase64Image() {
-		String base64Image = null;
+		String base64Image = "";
 		try {
 			InputStream inputStream;
 			inputStream = this.inputImage;
