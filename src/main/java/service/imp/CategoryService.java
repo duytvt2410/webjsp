@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import dao.ICategoryDAO;
 import dao.imp.CategoryDAO;
@@ -30,7 +31,6 @@ public class CategoryService implements ICategoryService{
 
 	@Override
 	public List<CategoryModel> findAll() {
-		// TODO Auto-generated method stub
 		return categoryDAO.findAll();
 	}
 
@@ -65,11 +65,13 @@ public class CategoryService implements ICategoryService{
 
 		model.setStatus("active");
 		model.setCreateDate(timestamp);
-		model.setCreateBy("admin");
 		model.setUpdateDate(null);
 		model.setUpdateBy("");
-		Date id = new Date();
-		model.setId(id.getTime());
+		Random rand = new Random();
+		String id = String.valueOf(rand.nextInt(101) + 100);
+		
+		id += String.valueOf(new Date().getTime());
+		model.setId(id);
 		
 		if(categoryDAO.insert(model) == true) {
 			map.put("success", "Thêm thành công.");
@@ -86,7 +88,7 @@ public class CategoryService implements ICategoryService{
 	}
 
 	@Override
-	public Map<String, String> update(CategoryModel model, Long id) {
+	public Map<String, String> update(CategoryModel model, String id) {
 		Map<String, String> map = new HashMap<String, String>();
 		CategoryModel oldModel = findOneById(id);
 		
@@ -127,7 +129,6 @@ public class CategoryService implements ICategoryService{
 		
 		if(model.getStatus() == null) model.setStatus(oldModel.getStatus());
 		model.setUpdateDate(timestamp);
-		model.setUpdateBy("admin");
 		
 		if(categoryDAO.update(model, id) == true) {
 			map.put("success", "Sửa thành công.");
@@ -139,7 +140,7 @@ public class CategoryService implements ICategoryService{
 	}
 
 	@Override
-	public CategoryModel findOneById(Long id) {
+	public CategoryModel findOneById(String id) {
 		return categoryDAO.findOneById(id);
 	}
 
@@ -167,17 +168,36 @@ public class CategoryService implements ICategoryService{
 
 
 	@Override
-	public Map<String, String> delete(Long id) {
+	public Map<String, String> delete(String id) {
 		Map<String, String> map = new HashMap<String, String>();
 		if(categoryDAO.delete(id)) {
 			map.put("success", "Xóa thành công");
 		} else {
-			map.put("danger", "Danh mục có chứa các nhãn hàng và nhóm nhóm sản phẩm. Không thể xóa");
+			CategoryModel category = categoryDAO.findOneById(id);
+			map.put("danger", category.getName() + " có chứa các nhãn hàng và nhóm nhóm sản phẩm. Không thể xóa");
 		}
 		
 		return map;
 	}
-	
-	
 
+
+	@Override
+	public Map<String, String> deleteAll(String[] id) {
+		Map<String, String> map = new HashMap<String, String>();
+		boolean isSuccess = true;
+		String modelFail = "";
+		for(String i : id ) {
+			if(!categoryDAO.delete(i))  {
+				CategoryModel category = categoryDAO.findOneById(i);
+				modelFail += category.getName() + ", ";
+				isSuccess = false;
+			}
+		}
+		if(isSuccess == true) {
+			map.put("success", "Xóa thành công");
+		} else {
+			map.put("danger", modelFail + " có chứa các nhãn hàng và nhóm nhóm sản phẩm. Không thể xóa");
+		}
+		return map;
+	}
 }

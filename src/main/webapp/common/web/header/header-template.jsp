@@ -12,16 +12,25 @@
 			<div id="top-header">
 				<div class="container">
 					<ul class="header-links pull-left">
-						<li><a href="#"><i class="fa fa-phone"></i> +021-95-51-84</a></li>
+						<li><a href="#"><i class="fa fa-phone"></i> 0833532303</a></li>
 						<li><a href="#"><i class="fa fa-envelope-o"></i> email@email.com</a></li>
 						<li><a href="#"><i class="fa fa-map-marker"></i> 1734 Stonecoal Road</a></li>
 					</ul>
-					<ul class="header-links pull-right">
+					<ul class="header-links pull-right ">
 					<% if(user == null) { %>
 						<li><a href="<%= request.getContextPath() + "/dangnhap"%>"><i class="fa fa-sign-in" aria-hidden="true"></i> Đăng nhập</a></li>
 						<li><a href="<%= request.getContextPath() + "/dangky"%>"><i class="fa fa-user-o"></i> Đăng ký</a></li>
 					<% } else { %>
-						<li><a href="<%= request.getContextPath() + "/dangky"%>"><i class="fa fa-user-o"></i> Xin chào <%= user.getFullName() %></a></li>
+						<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user-o "></i> Xin chào <%= user.getFullName() %></a>
+							 <div class="dropdown-menu p-3" style="padding: 10px">
+							 	<% if(user.getRole().equals("admin")) { %>
+							      <a class="dropdown-item" style="color: black" href="<%=request.getContextPath() + "/admin-home"%>">Vào trang admin</a><br>
+							    <% } %>
+							      <a class="dropdown-item" style="color: black" href="<%=request.getContextPath() + "/doimatkhau"%>">Đổi mật khẩu</a><br>
+							      <a class="dropdown-item" style="color: black" href="<%=request.getContextPath() + "/donhang"%>">Đơn hàng</a><br>
+							      <a class="dropdown-item" style="color: black" href="<%=request.getContextPath() + "/dangxuat"%>">Đăng xuất</a><br>
+							    </div>
+						</li>
 					<% } %>
 					</ul>
 				</div>
@@ -47,14 +56,10 @@
 						<!-- SEARCH BAR -->
 						<div class="col-md-6">
 							<div class="header-search">
-								<form>
-									<select class="input-select">
-										<option value="0">All Categories</option>
-										<option value="1">Category 01</option>
-										<option value="1">Category 02</option>
-									</select>
-									<input class="input" placeholder="Search here">
-									<button class="search-btn">Search</button>
+								<form action="<%=request.getContextPath() + "/timkiem"%>">
+									<input name="tukhoa" style="border-radius: 40px 0 0 40px; width: calc(100% - 160px);" class="input" placeholder="Nhập từ khóa">
+									
+									<button type="submit" class="search-btn">Tìm</button>
 								</form>
 							</div>
 						</div>
@@ -69,24 +74,26 @@
 								<% Cart cart = (Cart) session.getAttribute("Cart"); 
 									if(cart == null) cart = new Cart();
 								%>
-								<div class="dropdown">
+								
+								<div class="dropdown" id="getMiniCart">
+								
 									<a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
 										<i class="fa fa-shopping-cart"></i>
-										<span>Your Cart</span>
+										<span>Giỏ hàng</span>
 										<div class="qty"><%= (cart.list() != null ? cart.list().size() : 0) %></div>
 									</a>
-									<div class="cart-dropdown">
+									<div class="cart-dropdown" style="right: -40px !important">
 										<div class="cart-list">
 										<% for(ProductModel productInCart : cart.list()) { %>
 											<div class="product-widget">
 												<div class="product-img">
-													<img src="data:image/jpg;base64,<%= productInCart.getImageProduct().getBase64Image()%>" alt="">
+													<img src="<%=(productInCart.getUrlImageProduct() != null ? Utils.getPathImage(productInCart.getUrlImageProduct()) : "")%>" alt="">
 												</div>
 												<div class="product-body">
 													<h3 class="product-name"><a href="#"><%= productInCart.getName() %></a></h3>
 													<h4 class="product-price"><span class="qty"><%= productInCart.getQtyInCart() %>x</span><%= (productInCart.getPricePromotional() != 0 ? Utils.convertToVND(productInCart.getPricePromotional()) : Utils.convertToVND(productInCart.getPrice())) %></h4>
 												</div>
-												<button class="delete" onclick="location.href='<%= request.getContextPath() + "/giohang?option=remove&id="+ productInCart.getId()%>'"><i class="fa fa-close"></i></button>
+												<button class="delete" onclick="removeItemCart(<%=productInCart.getId()%>)"><i class="fa fa-close"></i></button>
 											</div>
 										<% } %>
 										</div>
@@ -95,13 +102,14 @@
 											<h5>Tổng giá: <%= Utils.convertToVND(cart.total()) %></h5>
 										</div>
 										<div class="cart-btns">
-											<a href="#">View Cart</a>
-											<a href="#">Checkout  <i class="fa fa-arrow-circle-right"></i></a>
+											<a href="<%= request.getContextPath() + "/giohang"%>">Xem giỏ</a>
+											<a href="<%= request.getContextPath() + (user != null ? "/thanhtoan" : "/dangnhap")%>">Thanh toán  <i class="fa fa-arrow-circle-right"></i></a>
 										</div>
 									</div>
+									
 								</div>
 								<!-- /Cart -->
-
+							
 								<!-- Menu Toogle -->
 								<div class="menu-toggle">
 									<a href="#">

@@ -1,3 +1,4 @@
+<%@page import="utils.Utils"%>
 <%@page import="model.ProductClassifyModel"%>
 <%@page import="model.ProductModel"%>
 <%@page import="model.ClassifyModel"%>
@@ -35,7 +36,6 @@
         <!-- Begin Page Content -->
         <div class="container-fluid">
 
-          
           <!-- Content Row -->
 
           <div class="row">
@@ -52,7 +52,7 @@
                     </a>
                     <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
                       <div class="dropdown-header">Lựa chọn khác:</div>
-                      <a class="dropdown-item" href="#">Xem danh sách các nhóm sản phẩm</a>
+                      <a class="dropdown-item" href="<%=request.getContextPath() + "/admin-product-list" %>">Xem danh sách sản phẩm</a>
                     </div>
                   </div>
                 </div>
@@ -67,9 +67,8 @@
 						  <label for="category" class="text-primary font-weight-bold">Danh mục:</label>
 						  <select class="form-control" id="category" required name="category" 
 						  onchange="getBrand(this.value, '', '')">
-						    <option value="">-- Chọn --</option>
+						    <option value="0">-- Chọn --</option>
 						    <% 
-						    	
 						    	if(listCategory != null) {
 							    	for(CategoryModel category : listCategory) { 
 							  %>
@@ -91,6 +90,9 @@
 						    <option >-- Chọn --</option>
 						  </select>
 					      </div>
+					      <div class="invalid-feedback">Vui lòng chọn danh mục</div>
+							<a href="<%=request.getContextPath() + "/admin-brand-add"%>"
+								class="small">- Thêm nhãn hàng</a>
 						</div>
 						
 						<div class="form-group">
@@ -151,19 +153,13 @@
 					    </div>
 					    <div class="form-group">
 					    <label for="image" class="text-primary font-weight-bold">Ảnh sản phẩm:</label>
-						<input id="image" class="form-control" name="file-image" type="file" accept="image/*"  required>
-							<div id="showImage"></div>
-							<div class="invalid-feedback">
-					      	<span>- Hãy chọn ảnh</span>
-					      </div>
+							<div id="dropzoneFromOne" class="dropzone"></div>
+							
 						</div><br>
 						<div class="form-group">
 					    <label for="detail-image" class="text-primary font-weight-bold">Ảnh chi tiêt:</label>
-						<input id="detail-image" class="form-control" name="file-images" type="file" multiple accept="image/*" required>
-							<div id="showImages"></div>
-							<div class="invalid-feedback">
-					      	<span>- Hãy chọn ảnh</span>
-					      </div>
+							<div id="dropzoneFrom" class="dropzone"></div>
+							
 						</div>
 						<div class="form-group">
 							<label for="promotionInformation" class="text-primary font-weight-bold">Thông tin khuyến mãi:</label>
@@ -192,6 +188,8 @@
 								CKEDITOR.replace( 'description' );
 							 </script>  
 						</div>
+						<input type="hidden" name="file-images" id="file-images">
+						<input type="hidden" name="file-image" id="file-image">
 					    <input type="hidden" value="add" name="option">
 					    <button type="submit" class="btn btn-primary">Thêm</button>
 					  </form>
@@ -217,70 +215,23 @@
 <%@include file="/common/admin/footer/script.jsp" %>
 
 <script type="text/javascript">
-function getBrand(category, brand, classify){
-	url = '<%= request.getContextPath() + "/admin-product-getBrand?category=" %>' + category + '&brand=' + brand; 
-	$.get(url, function(responseText) {
-        $("#get_brand").html(responseText);
-	});	
-	url = '<%= request.getContextPath() + "/admin-product-getClassify?category=" %>' + category + '&classify=' + classify; 
-	
-	$.get(url, function(responseText) {
-        $("#get_classify").html(responseText);
-	});	
-}
-
-
-function displayImage() {
-
-	  var $preview = $('#showImage').empty();
-	  if (this.files) $.each(this.files, readAndPreview);
-	
-	  function readAndPreview(i, file) {
-	    if(i == 1) {
-	    	$("#image").val('');
-		      return alert("Vượt quá số ảnh");
-	    }
-	    if (!/\.(jpe?g|png|gif)$/i.test(file.name)){
-	    	$("#image").val('');
-	      return alert(file.name +" không phải file ảnh");
-	    } 
-	    
-	    var reader = new FileReader();
-
-	    $(reader).on("load", function() {
-	      $preview.append($("<img/>", {src:this.result, height:70, 'class':'img-thumbnail'}));
-	    });
-
-	    reader.readAsDataURL(file);
-	    
-	  }
-
+	function getBrand(category, brand, classify){
+		if(category == "0") {
+			$("#get_brand").html("<label for='brand' class='text-primary font-weight-bold'>Nhãn hàng:</label><select class='form-control' id='brand' required name='brand' disabled='disabled'><option >-- Chọn --</option></select>");
+			$("#get_classify").html("<label for='classify' class='text-primary font-weight-bold'>Nhóm sản phẩm:</label><input type='text' class='form-control' value='Chọn' disabled='disabled'>");
+		} else {
+			url = '<%= request.getContextPath() + "/admin-product-getBrand?category=" %>' + category + '&brand=' + brand; 
+			$.get(url, function(responseText) {
+		        $("#get_brand").html(responseText);
+			});	
+			url = '<%= request.getContextPath() + "/admin-product-getClassify?category=" %>' + category + '&classify=' + classify; 
+			
+			$.get(url, function(responseText) {
+		        $("#get_classify").html(responseText);
+			});	
+		}
 	}
-	
-function displayImages() {
 
-	  var $preview = $('#showImages').empty();
-	  if (this.files) $.each(this.files, readAndPreview);
-
-	  function readAndPreview(i, file) {
-	    
-		  if (!/\.(jpe?g|png|gif)$/i.test(file.name)){
-		    	$("#detail-image").val('');
-		      return alert(file.name +" không phải file ảnh");
-		    } // else...
-		    
-		    var reader = new FileReader();
-
-		    $(reader).on("load", function() {
-		      $preview.append($("<img/>", {src:this.result, height:70, 'class':'img-thumbnail'}));
-		    });
-
-		    reader.readAsDataURL(file);
-	    
-	  }
-
-	}
-	
 	function convertToVND(money) {
 		var res = 0;
 		if(money == "") {
@@ -302,7 +253,8 @@ function displayImages() {
 	}
 	
 	$(document).ready(function(){
-	  if($('#category').val() != null) {
+		
+	  if($('#category').val() != "0") {
 		  getBrand($('#category').val(), '<%= (product != null ? product.getBrandId() : "") %>' , '<%= (product != null ? product.getStringIdClassify() : "") %>');
 	  }
 	  
@@ -315,10 +267,87 @@ function displayImages() {
 		  	var money = $( "#price" ).val();
 			 $( "#price" ).val(convertToVND(money));
 	  }
+	  
+	  Dropzone.options.dropzoneFrom = {
+			  url: '<%= Utils.getUrlUploadImage("FileUploadServlet")%>',
+			  addRemoveLinks: true,
+			  parallelUploads: 1000,
+			  maxThumbnailFilesize: 100,
+			  autoProcessQueue: true,
+			  acceptedFiles:".png,.jpg,.gif,.bmp,.jpeg",
+			  headers: {
+				  "Access-Control-Allow-Origin": "*",
+				  "Content-Type": "text/html",
+				  "Access-Control-Allow-Methods": "PUT, GET, POST, DELETE, OPTIONS",
+				  "Access-Control-Allow-Headers": "X-PINGOTHER, Origin, X-Requested-With, Content-Type, Accept"
+			  },
+			  init: function() {
+				  this.on("complete", function (file) {
+			          var oldName = $("#file-images").val();
+			          if(oldName == "") {
+			        	  $( "#file-images" ).val(file.name);
+			          } else {
+			        	  $( "#file-images" ).val(oldName + "dt14082410dt" + file.name);
+			          }
+			          
+			       });
+			      this.on("removedfile", function (file) {
+			         $.ajax({
+			           url: '<%= Utils.getUrlUploadImage("DeleteFile?name=")%>' + file.name,
+			           type: 'GET'
+			       });
+			         var arr = $("#file-images").val().split('dt14082410dt');
+			         var l = arr.length;
+			         for(var i = 0; i < arr.length; i++) {
+						 if(arr[i] == file.name) {
+							 arr.splice(i, 1);
+							 l--;
+							 break;
+			        	 }
+			         }
+			         var res = "";
+			         for(var i = 0; i < arr.length; i++) {
+			        	 if(i + 1 == arr.length) {
+			        		 res += arr[i];
+			        	 } else {
+			        		 res += arr[i] + "dt14082410dt";
+			        	 }
+			        	 
+			         }
+			         $( "#file-images" ).val(res);
+			      });
+
+			}
+		};
+			 
+			 Dropzone.options.dropzoneFromOne = {
+					  url: '<%= Utils.getUrlUploadImage("FileUploadServlet")%>',
+					  addRemoveLinks: true,
+					  parallelUploads: 1000,
+					  maxThumbnailFilesize: 100,
+					  autoProcessQueue: true,
+					  acceptedFiles:".png,.jpg,.gif,.bmp,.jpeg",
+					  maxFiles: 1,
+					  init: function() {
+							  this.on("maxfilesexceeded", function(file) {
+						            this.removeAllFiles();
+						            this.addFile(file);
+						      });
+							  this.on("complete", function (file) {
+						          $("#file-image").val(file.name);
+						      });
+					        this.on("removedfile", function (file) {
+					            
+					                $.ajax({
+					                    url: '<%= Utils.getUrlUploadImage("DeleteFile?name=")%>' + file.name,
+					                    type: 'GET'
+					                });
+					            
+					        });
+					  }
+			 };
+	  
 	});
-	
-	$('#image').on("change", displayImage);
-	$('#detail-image').on("change", displayImages);
 	
 	$('#price').on('input', function() {
 		var money = $( "#price" ).val();
@@ -330,11 +359,18 @@ function displayImages() {
 		 $( "#pricePromotional" ).val(convertToVND(money));
 	});
 	
-	
+	 $('#qty').on("change", function(){
+		  var num = parseInt($("#qty").val());
+		  if(num < 0) {
+			  $("#qty").val("1");
+		  } else if(num > 100){
+			  $("#qty").val("100");
+		  }
+	  });
 	
 </script>
-
 </body>
 
 </html>
+
 	

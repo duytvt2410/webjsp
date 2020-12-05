@@ -36,7 +36,7 @@ public class BrandService implements IBrandService {
 	}
 
 	@Override
-	public List<BrandModel> findAllByCategoryId(int id) {
+	public List<BrandModel> findAllByCategoryId(String id) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -54,7 +54,7 @@ public class BrandService implements IBrandService {
 	}
 
 	@Override
-	public BrandModel findOneById(Long id) {
+	public BrandModel findOneById(String id) {
 
 		return brandDAO.findOneById(id);
 	}
@@ -103,12 +103,11 @@ public class BrandService implements IBrandService {
 
 		model.setStatus("active");
 		model.setCreateDate(timestamp);
-		model.setCreateBy("admin");
 		model.setUpdateDate(null);
 		model.setUpdateBy("");
 
 		Date id = new Date();
-		model.setId(id.getTime());
+		model.setId(""+id.getTime());
 
 		if (brandDAO.insert(model) == true) {
 			map.put("success", "Thêm thành công.");
@@ -120,7 +119,7 @@ public class BrandService implements IBrandService {
 	}
 
 	@Override
-	public Map<String, String> update(BrandModel model, Long id) {
+	public Map<String, String> update(BrandModel model, String id) {
 		Map<String, String> map = new HashMap<String, String>();
 		BrandModel oldModel = findOneById(id);
 
@@ -173,7 +172,6 @@ public class BrandService implements IBrandService {
 		if (model.getStatus() == null)
 			model.setStatus(oldModel.getStatus());
 		model.setUpdateDate(timestamp);
-		model.setUpdateBy("admin");
 
 		if (brandDAO.update(model, id) == true) {
 			map.put("success", "Sửa thành công.");
@@ -206,6 +204,41 @@ public class BrandService implements IBrandService {
 	public BrandModel findOneByCategoryAliasAndAlias(String categoryAlias, String alias) {
 		// TODO Auto-generated method stub
 		return brandDAO.findOneByCategoryAliasAndAlias(categoryAlias, alias);
+	}
+
+	@Override
+	public Map<String, String> delete(String id) {
+		Map<String, String> map = new HashMap<String, String>();
+		if(brandDAO.delete(id)) {
+			map.put("success", "Xóa thành công");
+		} else {
+			BrandModel model = brandDAO.findOneById(id);
+			map.put("danger", model.getName() + " có chứa các nhãn hàng và nhóm nhóm sản phẩm. Không thể xóa");
+		}
+		
+		return map;
+	}
+
+	@Override
+	public Map<String, String> deleteAll(String[] id) {
+		Map<String, String> map = new HashMap<String, String>();
+		boolean isSuccess = true;
+		String modelFail = "";
+		for(String i : id ) {
+			if(!brandDAO.delete(i))  {
+				BrandModel model = brandDAO.findOneById(i);
+				modelFail += model.getName() + ", ";
+				isSuccess = false;
+			}
+		}
+		if(isSuccess == true) {
+			map.put("success", "Xóa thành công");
+		} else {
+			map.put("danger", modelFail + " có chứa các nhãn hàng và nhóm nhóm sản phẩm. Không thể xóa");
+		}
+		
+		
+		return map;
 	}
 
 }

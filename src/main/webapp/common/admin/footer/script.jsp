@@ -1,7 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
-<!-- Bootstrap core JavaScript-->
-<script src="template/admin/vendor/jquery/jquery.min.js"></script>
+
 <script src="template/admin/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
 <!-- Core plugin JavaScript-->
@@ -13,9 +12,6 @@
 <!-- Page level plugins -->
 <script src="template/admin/vendor/chart.js/Chart.min.js"></script>
 
-<!-- Page level custom scripts -->
-<script src="template/admin/js/demo/chart-area-demo.js"></script>
-<script src="template/admin/js/demo/chart-pie-demo.js"></script>
 
 <script>
 	// Disable form submissions if there are invalid fields
@@ -71,5 +67,7 @@ function setNavigation() {
         }
     });
 }  	
+
+
 	
 </script>

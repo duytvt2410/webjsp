@@ -26,7 +26,7 @@ public class ClassifyDAO extends AbstactDAO<ClassifyModel> implements IClassifyD
 	}
 
 	@Override
-	public List<ClassifyModel> findAllByCategoryId(int id) {
+	public List<ClassifyModel> findAllByCategoryId(String id) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -51,7 +51,7 @@ public class ClassifyDAO extends AbstactDAO<ClassifyModel> implements IClassifyD
 	}
 
 	@Override
-	public ClassifyModel findOneById(Long id) {
+	public ClassifyModel findOneById(String id) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("SELECT classify.*, category.name AS category_name, category.alias AS category_alias FROM classify");
 		sql.append(" JOIN category ON classify.category_id = category.id");
@@ -71,7 +71,7 @@ public class ClassifyDAO extends AbstactDAO<ClassifyModel> implements IClassifyD
 	}
 
 	@Override
-	public boolean update(ClassifyModel model, Long id) {
+	public boolean update(ClassifyModel model, String id) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("UPDATE classify");
 		sql.append(" SET name = ?, alias = ?, status = ?, category_id = ?, updated_date = ?, updated_by = ?");
@@ -96,6 +96,14 @@ public class ClassifyDAO extends AbstactDAO<ClassifyModel> implements IClassifyD
 		sql.append(" JOIN category ON classify.category_id = category.id");
 		sql.append(" WHERE category.alias = ?");
 		return query(sql.toString(), new ClassifyMapper(), categoryAlias);
+	}
+
+	@Override
+	public boolean delete(String id) {
+		StringBuilder sql = new StringBuilder();
+		sql.append("DELETE FROM classify");
+		sql.append(" WHERE id = ?;");
+		return excute(sql.toString(), id);
 	}
 
 }

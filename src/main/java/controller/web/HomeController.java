@@ -14,8 +14,8 @@ import model.ProductModel;
 import service.IProductService;
 import service.imp.ProductService;
 
-@WebServlet("/trangchu")
-public class HomeController extends HttpServlet {
+@WebServlet(urlPatterns = { "/trangchu"})
+public class  HomeController extends HttpServlet {
 	/**
 	 * 
 	 */
@@ -26,39 +26,44 @@ public class HomeController extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		List<ProductModel> listProduct = new ArrayList<ProductModel>();
+
 		// Lấy sản phẩm mới nhất
-		// - Điện thoại
-		listProduct = productService.findAllByCategoryAndStatusAndOrderByCreateDate("dien-thoai", "active");
-		
-		request.setAttribute("listProductIsPhone", listProduct);
 
-		// - Laptop
-		listProduct = productService.findAllByCategoryAndStatusAndOrderByCreateDate("laptop", "active");
 		
-		request.setAttribute("listProductIsLaptop", listProduct);
+			// - Điện thoại
+			listProduct = productService.findAllByCategoryAndIsNewAndStatusAndLimit("dien-thoai", "yes", "active", 10);
 
-		// - Phụ kiện
-		listProduct = productService.findAllByCategoryIsAccessoriesAndStatusAndOrderByCreateDate("yes", "active");
-		
-		request.setAttribute("listProductIsAccessories", listProduct);
+			request.setAttribute("listProductIsNewPhone", listProduct);
 
-		// Lấy sản phẩm đang giảm giá
-		// - Điện thoại
-		listProduct = productService.findAllByCategoryAndStatusAndPricePromotion("dien-thoai", "active");
-		
-		request.setAttribute("listProductIsPhoneDiscount", listProduct);
+			// - Laptop
+			listProduct = productService.findAllByCategoryAndIsNewAndStatusAndLimit("laptop", "yes", "active", 10);
 
-		// - Laptop
-		listProduct = productService.findAllByCategoryAndStatusAndPricePromotion("laptop", "active");
-		
-		request.setAttribute("listProductIsLaptopDiscount", listProduct);
-		
-		// - Phụ kiện
-		listProduct = productService.findAllByCategoryIsAccessoriesAndStatusAndPricePromotion("yes", "active");
-		
-		request.setAttribute("listProductIsAccessoriesDiscount", listProduct);
+			request.setAttribute("listProductIsNewLaptop", listProduct);
 
-		request.getRequestDispatcher("view/web/home.jsp").forward(request, response);
+			// - Phụ kiện
+			listProduct = productService.findAllByCategoryIsAccessoriesAndIsNewAndStatusAndLimit("yes", "yes", "active", 10);
+
+			request.setAttribute("listProductIsNewAccessories", listProduct);
+
+			// Lấy sản phẩm đang giảm giá
+			// - Điện thoại
+			listProduct = productService.findAllByCategoryAndStatusAndPricePromotion("dien-thoai", "active");
+
+			request.setAttribute("listProductIsPhoneDiscount", listProduct);
+
+			// - Laptop
+			listProduct = productService.findAllByCategoryAndStatusAndPricePromotion("laptop", "active");
+
+			request.setAttribute("listProductIsLaptopDiscount", listProduct);
+
+			// - Phụ kiện
+			listProduct = productService.findAllByCategoryIsAccessoriesAndStatusAndPricePromotion("yes", "active");
+
+			request.setAttribute("listProductIsAccessoriesDiscount", listProduct);
+
+			request.getRequestDispatcher("view/web/home.jsp").forward(request, response);
+
+
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)

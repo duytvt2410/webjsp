@@ -3,7 +3,7 @@ package model;
 import java.sql.Timestamp;
 
 public class UserModel{
-	private Long id;
+	private String id;
 	private String fullName;
 	private String role;
 	private String email;
@@ -11,12 +11,18 @@ public class UserModel{
 	private String status;
 	
 	private String createBy, updateBy;
-	private Timestamp createDate, updateDate;
+	private Timestamp createDate, updateDate, lastLogin;
 	
-	public Long getId() {
+	public Timestamp getLastLogin() {
+		return lastLogin;
+	}
+	public void setLastLogin(Timestamp lastLogin) {
+		this.lastLogin = lastLogin;
+	}
+	public String getId() {
 		return id;
 	}
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 	public String getFullName() {

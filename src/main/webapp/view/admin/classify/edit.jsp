@@ -48,7 +48,7 @@
                     </a>
                     <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
                       <div class="dropdown-header">Lựa chọn khác:</div>
-                      <a class="dropdown-item" href="#">Xem danh sách các nhóm sản phẩm</a>
+                     <a class="dropdown-item" href="<%= request.getContextPath() + "/admin-classify-list"%>">Xem danh sách nhóm sản phẩm</a>
                     </div>
                   </div>
                 </div>

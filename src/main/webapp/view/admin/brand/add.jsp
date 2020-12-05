@@ -49,7 +49,7 @@
                     </a>
                     <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
                       <div class="dropdown-header">Lựa chọn khác:</div>
-                      <a class="dropdown-item" href="#">Xem danh sách các nhóm sản phẩm</a>
+                      <a class="dropdown-item" href="<%= request.getContextPath() + "/admin-classify-list"%>">Danh sách các nhóm sản phảma</a>
                     </div>
                   </div>
                 </div>
@@ -76,7 +76,7 @@
 						    %>
 						  </select>
 					      <div class="invalid-feedback">Vui lòng chọn danh mục</div>
-					      <a href="#" class="small">- Thêm danh mục</a>
+					      <a href="<%=request.getContextPath() + "/admin-category-add" %>" class="small">- Thêm danh mục</a>
 						</div>
 					    <div class="form-group">
 					      <label for="brand_name">Tên nhãn hàng:</label>

@@ -1,3 +1,4 @@
+<%@page import="model.UserModel"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -11,7 +12,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>SB Admin 2 - Login</title>
+  <title>Electro - Đăng nhập</title>
 
   <!-- Custom fonts for this template-->
   <link href="template/admin/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -44,16 +45,23 @@
             <!-- Nested Row within Card Body -->
             <div class="row">
               <div class="col-lg-12">
-                <div class="p-5">
+                <div class="p-3">
                   <div class="text-center">
                     <h1 class="h4 text-gray-900 mb-4">Đăng nhập vào tài khoản của bạn</h1>
                   </div>
                   <form class="user" action="<%= request.getContextPath() + "/dangnhap" %>" method="post">
+                 			 <% String message = (String) request.getAttribute("message"); %>
+                 			 <% UserModel user = (UserModel) request.getAttribute("userModel"); %>
+							<% if(message != null) {%>
+								<div class="col-12 p-3 text-center mb-2" style="background-color: #f8d7da; border-radius: 10px">
+								<%= message %>
+								</div>
+								<% } %>
                     <div class="form-group">
-                      <input type="email" class="form-control form-control-user" id="exampleInputEmail" name="email" aria-describedby="emailHelp" placeholder="Nhập địa chỉ Email">
+                      <input type="email" required value="<%= user != null ? user.getEmail() :  "" %>" class="form-control form-control-user" id="exampleInputEmail" name="email" aria-describedby="emailHelp" placeholder="Nhập địa chỉ Email">
                     </div>
                     <div class="form-group">
-                      <input type="password" class="form-control form-control-user" id="exampleInputPassword" name="password"  placeholder="Nhập mật khẩu">
+                      <input type="password" required class="form-control form-control-user" id="exampleInputPassword" name="password"  placeholder="Nhập mật khẩu">
                     </div>
                     <div class="form-group">
                       <div class="custom-control custom-checkbox small">
@@ -67,16 +75,16 @@
                       Đăng nhập
                     </button>
                     <hr>
-                    <a href="index.html" class="btn btn-google btn-user btn-block">
+                    <a href="https://accounts.google.com/o/oauth2/auth?scope=email&redirect_uri=https://jspweb.demo.jelastic.com/dangnhapbangGG&response_type=code&client_id=762420684607-sso3ff8r1tp1j2uramg24gvvqsnv9g17.apps.googleusercontent.com&approval_prompt=force" class="btn btn-google btn-user btn-block">
                       <i class="fab fa-google fa-fw"></i> Đăng nhập bằng Google
                     </a>
-                    <a href="index.html" class="btn btn-facebook btn-user btn-block">
+                    <a href="https://www.facebook.com/dialog/oauth?client_id=608201396794677&redirect_uri=https://jspweb.demo.jelastic.com/dangnhapbangFB"  class="btn btn-facebook btn-user btn-block">
                       <i class="fab fa-facebook-f fa-fw"></i> Đăng nhập bằng Facebook
                     </a>
                   </form>
                   <hr>
                   <div class="text-center">
-                    <a class="small" href="forgot-password.html">Quên mật khẩu?</a>
+                    <a class="small" href="<%= request.getContextPath() + "/quenmatkhau"%>">Quên mật khẩu?</a>
                   </div>
                   <div class="text-center">
                     <a class="small" href="<%= request.getContextPath() + "/dangky"%>">Tạo một tài khoản!</a>

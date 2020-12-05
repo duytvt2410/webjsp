@@ -7,11 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import org.apache.commons.fileupload.FileItem;
-
 import dao.IProductDAO;
 import dao.imp.ProductDAO;
-import model.BrandModel;
 import model.ImagesModel;
 import model.ProductClassifyModel;
 import model.ProductModel;
@@ -45,26 +42,13 @@ public class ProductService implements IProductService {
 		return service;
 	}
 
-	
 	@Override
 	public List<ProductModel> findAll() {
 		return productDAO.findAll();
 	}
 
 	@Override
-	public List<ProductModel> findAllByIsAccessories(String isAccessories) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public List<ProductModel> findAllByStatus(String status) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<ProductModel> findAllByIsAccessoriesAndStatus(String isAccessories, String status) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -75,7 +59,7 @@ public class ProductService implements IProductService {
 	}
 
 	@Override
-	public ProductModel findOneById(Long id) {
+	public ProductModel findOneById(String id) {
 		return productDAO.findOneById(id);
 	}
 
@@ -85,7 +69,7 @@ public class ProductService implements IProductService {
 		String checkName = Valid.checkNameNotContainSpecial(model.getName(), 2, 100);
 
 		if (checkName.equals(SystemContain.CONTAINS_SPECIAL_CHARACTER)) {
-			map.put("danger", "Tên sản phẩm không hợp lệ. Tên sản phẩm chỉ được chứa các ký tự: \" ,.:/)(/ \"");
+			map.put("danger", "Tên sản phẩm không hợp lệ. Tên sản phẩm có chứa ký tự đặc biệt");
 			return map;
 		}
 		if (checkName.equals(SystemContain.OVER_SIZE)) {
@@ -100,13 +84,9 @@ public class ProductService implements IProductService {
 			return map;
 		}
 
-		BrandModel brand = null;
-
 		if (brandService.findOneById(model.getBrandId()) == null) {
 			map.put("danger", "Tên nhãn không tồn tại");
 			return map;
-		} else {
-			brand = brandService.findOneById(model.getBrandId());
 		}
 		if (model.getPromotionInformation() == null)
 			model.setPromotionInformation("");
@@ -117,7 +97,7 @@ public class ProductService implements IProductService {
 		if (model.getSpecifications() == null)
 			model.setSpecifications("");
 
-		if (Valid.isOverLength(model.getPromotionInformation(), 0, 10000)) {
+		if (Valid.isOverLength(model.getPromotionInformation(), 0, 15000)) {
 			if (model.getPromotionInformation().length() == 0) {
 				model.setPromotionInformation("");
 			} else {
@@ -126,7 +106,7 @@ public class ProductService implements IProductService {
 			}
 		}
 
-		if (Valid.isOverLength(model.getDescription(), 0, 10000)) {
+		if (Valid.isOverLength(model.getDescription(), 0, 15000)) {
 			if (model.getDescription().length() == 0) {
 				model.setDescription("");
 			} else {
@@ -135,7 +115,7 @@ public class ProductService implements IProductService {
 			}
 		}
 
-		if (Valid.isOverLength(model.getSpecifications(), 0, 10000)) {
+		if (Valid.isOverLength(model.getSpecifications(), 0, 15000)) {
 			if (model.getSpecifications().length() == 0) {
 				model.setSpecifications("");
 			} else {
@@ -152,62 +132,47 @@ public class ProductService implements IProductService {
 			}
 		}
 
-		if (model.getFieldsImageProduct().getSize() == 0) {
-			map.put("danger", "Không có ảnh cho sản phẩm");
-			return map;
-		}
-
 		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
 		model.setStatus("active");
 		model.setCreateDate(timestamp);
-		model.setCreateBy("admin");
 		model.setUpdateDate(null);
 		model.setUpdateBy("");
-		
-		
 
 		Random rand = new Random();
 		String id = String.valueOf(rand.nextInt(101) + 100);
 
 		id += String.valueOf(new Date().getTime());
-		model.setId(Long.parseLong(id));
+		model.setId(id);
 
 		if (productDAO.insert(model) == true) {
 
 			try {
-				ImagesModel imageProduct = new ImagesModel();
-				imageProduct = new ImagesModel();
-				if (model.getFieldsImageProduct().getSize() > 0) {
-					String mimetype = model.getFieldsImageProduct().getContentType();
-					String type = mimetype.split("/")[0];
+				if (model.getImageProduct() != null) {
 
-					if (type.equals("image")) {
-						imageProduct.setProduct_Id(model.getId());
-						imageProduct.setType("image_product");
-						imageProduct.setInputImage(model.getFieldsImageProduct().getInputStream());
-					}
+					ImagesModel imgProduct = new ImagesModel();
+					imgProduct.setProduct_Id(model.getId());
+					imgProduct.setType("image_product");
+					imgProduct.setName("img-1");
+					imgProduct.setPhoto(model.getImageProduct().getPhoto());
+					imageService.insert(imgProduct);
+
 				}
-				
-				imageService.insert(imageProduct);
+				if (model.getImagesDetail() != null) {
+					int index_img = 2;
+					for (ImagesModel img : model.getImagesDetail()) {
 
-
-				if (model.getFieldsImagesDetail().size() > 0) {
-					String mimetype = model.getFieldsImageProduct().getContentType();
-					String type = mimetype.split("/")[0];
-					for (FileItem images : model.getFieldsImagesDetail()) {
-						if (type.equals("image")) {
-							ImagesModel image = new ImagesModel();
-							image.setType("image_detail");
-							image.setProduct_Id(model.getId());
-							image.setInputImage(images.getInputStream());
-							imageService.insert(image);
-						}
+						ImagesModel imgDetailProduct = new ImagesModel();
+						imgDetailProduct.setType("image_detail");
+						imgDetailProduct.setProduct_Id(model.getId());
+						imgDetailProduct.setName("img-" + index_img);
+						imgDetailProduct.setPhoto(img.getPhoto());
+						imageService.insert(imgDetailProduct);
+						index_img++;
 
 					}
 				}
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -228,7 +193,7 @@ public class ProductService implements IProductService {
 	}
 
 	@Override
-	public Map<String, String> update(ProductModel model, Long id) {
+	public Map<String, String> update(ProductModel model, String id) {
 		Map<String, String> map = new HashMap<String, String>();
 		ProductModel oldModel = findOneById(model.getId());
 
@@ -240,7 +205,7 @@ public class ProductService implements IProductService {
 		String checkName = Valid.checkNameNotContainSpecial(model.getName(), 2, 100);
 
 		if (checkName.equals(SystemContain.CONTAINS_SPECIAL_CHARACTER)) {
-			map.put("danger", "Tên sản phẩm không hợp lệ. Tên sản phẩm chỉ được chứa các ký tự: \" ,.:/)(/ \"");
+			map.put("danger", "Tên sản phẩm không hợp lệ. Tên sản phẩm không nên có ký tự đặc biệt");
 			return map;
 		}
 		if (checkName.equals(SystemContain.OVER_SIZE)) {
@@ -255,13 +220,9 @@ public class ProductService implements IProductService {
 			return map;
 		}
 
-		BrandModel brand = null;
-
 		if (brandService.findOneById(model.getBrandId()) == null) {
 			map.put("danger", "Tên nhãn không tồn tại");
 			return map;
-		} else {
-			brand = brandService.findOneById(model.getBrandId());
 		}
 		if (model.getPromotionInformation() == null)
 			model.setPromotionInformation("");
@@ -272,7 +233,7 @@ public class ProductService implements IProductService {
 		if (model.getSpecifications() == null)
 			model.setSpecifications("");
 
-		if (Valid.isOverLength(model.getPromotionInformation(), 0, 10000)) {
+		if (Valid.isOverLength(model.getPromotionInformation(), 0, 15000)) {
 			if (model.getPromotionInformation().length() == 0) {
 				model.setPromotionInformation("");
 			} else {
@@ -281,7 +242,7 @@ public class ProductService implements IProductService {
 			}
 		}
 
-		if (Valid.isOverLength(model.getDescription(), 0, 10000)) {
+		if (Valid.isOverLength(model.getDescription(), 0, 15000)) {
 			if (model.getDescription().length() == 0) {
 				model.setDescription("");
 			} else {
@@ -290,7 +251,7 @@ public class ProductService implements IProductService {
 			}
 		}
 
-		if (Valid.isOverLength(model.getSpecifications(), 0, 10000)) {
+		if (Valid.isOverLength(model.getSpecifications(), 0, 15000)) {
 			if (model.getSpecifications().length() == 0) {
 				model.setSpecifications("");
 			} else {
@@ -307,87 +268,69 @@ public class ProductService implements IProductService {
 			}
 		}
 
-		
-
 		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
 		if (model.getStatus() == null)
 			model.setStatus(oldModel.getStatus());
 		model.setUpdateDate(timestamp);
-		model.setUpdateBy("admin");
 
 		if (productDAO.update(model, id) == true) {
 
 			try {
-				ImagesModel imageProduct = new ImagesModel();
-				imageProduct = new ImagesModel();
-				if (model.getFieldsImageProduct() != null) {
+
+				if (model.getImageProduct() != null) {
 
 					if (imageService.deleteByProductIdAndType(model.getId(), "image_product") == true) {
-						String mimetype = model.getFieldsImageProduct().getContentType();
-						String type = mimetype.split("/")[0];
-
-						if (type.equals("image")) {
-							imageProduct.setProduct_Id(model.getId());
-							imageProduct.setType("image_product");
-							imageProduct.setInputImage(model.getFieldsImageProduct().getInputStream());
-						}
-						imageService.insert(imageProduct);
+					
+							ImagesModel imgProduct = new ImagesModel();
+							imgProduct.setProduct_Id(model.getId());
+							imgProduct.setType("image_product");
+							imgProduct.setName("img-1");
+							imgProduct.setPhoto(model.getImageProduct().getPhoto());
+							imageService.insert(imgProduct);
 
 					}
 
 				}
 
-				if (model.getFieldsImagesDetail().size() > 0) {
+				if (model.getImagesDetail() != null) {
 					if (imageService.deleteByProductIdAndType(model.getId(), "image_detail") == true) {
-						
-						for (FileItem images : model.getFieldsImagesDetail()) {
-							String mimetype = images.getContentType();
-							String type = mimetype.split("/")[0];
-							if (type.equals("image")) {
-								ImagesModel image = new ImagesModel();
-								image.setType("image_detail");
-								image.setProduct_Id(model.getId());
-								image.setInputImage(images.getInputStream());
-								imageService.insert(image);
-								
-							}
+						int index_img = 2;
+						for (ImagesModel img : model.getImagesDetail()) {
+							
+								ImagesModel imgDetailProduct = new ImagesModel();
+								imgDetailProduct.setType("image_detail");
+								imgDetailProduct.setName("img-" + index_img);
+								imgDetailProduct.setProduct_Id(model.getId());
+								imgDetailProduct.setPhoto(img.getPhoto());
+								imageService.insert(imgDetailProduct);
+								index_img++;
+							
 
 						}
 					}
-					
+
 				}
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			if(productClassifyService.deleteByProductId(model.getId())) {
+			if (productClassifyService.deleteByProductId(model.getId())) {
 				for (ProductClassifyModel productClassify : model.getListClassify()) {
-				
+
 					productClassify.setProductId(model.getId());
 					productClassify.setProductAlias(model.getAlias());
 
 					productClassifyService.insert(productClassify);
 				}
-				
+
 			}
 
-			map.put("success", "Thêm thành công.");
+			map.put("success", "Sửa thành công.");
 			return map;
 		} else {
-			map.put("danger", "Thêm thất bại.");
+			map.put("danger", "Có lỗi xảy ra. Vui lòng thử lại");
 			return map;
 		}
-	}
-
-	@Override
-	public List<ProductModel> findAllByCategoryAndStatusAndOrderByCreateDate(String categoryAlias, String status) {
-		return productDAO.findAllByCategoryAndStatusAndOrderByCreateDate(categoryAlias, status);
-	}
-
-	@Override
-	public List<ProductModel> findAllByCategoryIsAccessoriesAndStatusAndOrderByCreateDate(String isAccessories,String status) {
-			return productDAO.findAllByCategoryIsAccessoriesAndStatusAndOrderByCreateDate(isAccessories, status);
 	}
 
 	@Override
@@ -402,19 +345,111 @@ public class ProductService implements IProductService {
 	}
 
 	@Override
-	public List<ProductModel> findAllRelatedProduct(Long brandId, Long idProduct, String status) {
-		return productDAO.findAllRelatedProduct(brandId,idProduct , status);
+	public List<ProductModel> findAllRelatedProduct(String brandId, String idProduct, String status) {
+		return productDAO.findAllRelatedProduct(brandId, idProduct, status);
 	}
+
 	@Override
 	public List<ProductModel> findAllByCategoryAndStatus(String categoryAlias, String status) {
 		return productDAO.findAllByCategoryAndStatus(categoryAlias, status);
 	}
 
+	@Override
+	public List<ProductModel> findAllCustomCondition(String condition, String categoryAlias, String status, int limit,
+			int start, Object... parameter) {
+		return productDAO.findAllCustomCondition(condition, categoryAlias, status, limit, start, parameter);
+	}
 
 	@Override
-	public List<ProductModel> findAllCustomCondition(String condition, String categoryAlias, String status,
-			Object... parameter) {
-		return productDAO.findAllCustomCondition(condition, categoryAlias, status, parameter);
+	public Map<String, String> delete(String id) {
+		Map<String, String> map = new HashMap<String, String>();
+		imageService.deleteByProductIdAndType(id, "image_product");
+		imageService.deleteByProductIdAndType(id, "image_detail");
+
+		productClassifyService.deleteByProductId(id);
+
+		if (productDAO.delete(id)) {
+			map.put("success", "Xóa thành công");
+		} else {
+			ProductModel product = productDAO.findOneById(id);
+			map.put("danger", product.getName() + " có chứa các nhãn hàng và nhóm nhóm sản phẩm. Không thể xóa");
+		}
+
+		return map;
+	}
+
+	@Override
+	public Map<String, String> deleteAll(String[] id) {
+		Map<String, String> map = new HashMap<String, String>();
+		boolean isSuccess = true;
+		String modelFail = "";
+		for (String i : id) {
+			if (!productDAO.delete(i)) {
+				ProductModel product = productDAO.findOneById(i);
+				modelFail += product.getName() + ", ";
+				isSuccess = false;
+			}
+		}
+		if (isSuccess == true) {
+			map.put("success", "Xóa thành công");
+		} else {
+			map.put("danger", modelFail + " có chứa các nhãn hàng và nhóm nhóm sản phẩm. Không thể xóa");
+		}
+		return map;
+	}
+
+	@Override
+	public List<ProductModel> findAllByBrandIdAndStatus(String brandId, String status) {
+		return productDAO.findAllByBrandIdAndStatus(brandId, status);
+	}
+
+	@Override
+	public boolean updateQty(int qty, String id) {
+		return productDAO.updateQty(qty, id);
+	}
+
+	@Override
+	public int countAllCustomCondition(String condition, String categoryAlias, String status, Object... parameter) {
+
+		return productDAO.countAllCustomCondition(condition, categoryAlias, status, parameter);
+	}
+
+	@Override
+	public List<ProductModel> findAllByKeyword(String condition, Object... keyParameter) {
+
+		return productDAO.findAllByKeyword(condition, keyParameter);
+	}
+
+	@Override
+	public boolean updateRated(double rated, String id) {
+		return productDAO.updateRated(rated, id);
+	}
+
+	@Override
+	public boolean updateIsNew(String isNew, String id) {
+		return productDAO.updateIsNew(isNew, id);
+	}
+
+	@Override
+	public List<ProductModel> findAllByCategoryAndIsNewAndStatusAndLimit(String categoryAlias, String isNew,
+			String status, int limit) {
+		return productDAO.findAllByCategoryAndIsNewAndStatusAndLimit(categoryAlias, isNew, status, limit);
+	}
+
+	@Override
+	public List<ProductModel> findAllByCategoryIsAccessoriesAndIsNewAndStatusAndLimit(String is_accessories,
+			String isNew, String status, int limit) {
+		return productDAO.findAllByCategoryIsAccessoriesAndIsNewAndStatusAndLimit(is_accessories, isNew, status, limit);
+	}
+
+	@Override
+	public int countAll() {
+		return productDAO.countAll();
+	}
+
+	@Override
+	public int countAllByCategory(String categoryAlias) {
+		return productDAO.countAllByCategory(categoryAlias);
 	}
 
 }

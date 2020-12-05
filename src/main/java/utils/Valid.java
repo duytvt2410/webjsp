@@ -8,14 +8,14 @@ public class Valid {
 
 	private static boolean isContainsSpecialCharacter(String str) {
 		if (str != null && !str.trim().isEmpty()) {
-			return !str.matches("[\\w " + VIETNAMESE_DIACRITIC_CHARACTERS + ",]*");
+			return !str.matches("[\\w " + VIETNAMESE_DIACRITIC_CHARACTERS + ",.]*");
 		}
 		return false;
 	}
 
 	private static boolean isValidText(String str) {
-		if (str != null && !str.trim().isEmpty()) {
-			return str.matches("[\\w " + VIETNAMESE_DIACRITIC_CHARACTERS + " ,.\\-:+)(&]*");
+		if (str != null) {
+			return str.matches("[\\w " + VIETNAMESE_DIACRITIC_CHARACTERS + " ,.\\-:+/)(&]*");
 		}
 		return false;
 	}
@@ -30,6 +30,17 @@ public class Valid {
 			}
 		}
 		return containsDigit;
+	}
+	
+	public static boolean isPhone(String str) {
+		boolean digit = true;
+		for(char c: str.toCharArray()) {
+			if(!Character.isDigit(c)) {
+				digit = false;
+				break;
+			}
+		}
+		return digit;
 	}
 	
 	public static boolean isEmail(String email) {
@@ -74,6 +85,16 @@ public class Valid {
 		return "valid";
 	}
 	
+	public static String checkPhone(String phone, int minSize, int maxSize) {
+		if (phone == null)
+			return SystemContain.EMPTY;
+		if (!isPhone(phone))
+			return SystemContain.NOTPHONE;
+		if (isOverLength(phone, minSize, maxSize) == true)
+			return SystemContain.OVER_SIZE;
+		return "valid";
+	}
+	
 	 public static boolean checkPassword(String password) {
 		 if (password == null || password == "")
 				return false;
@@ -83,9 +104,8 @@ public class Valid {
 	    }
 
 	public static boolean isOverLength(String str, int min, int max) {
-		if (str == null || str.trim().isEmpty()) {
+		if (str == null) {
 			return true;
-
 		}
 		return str.trim().length() > max || str.trim().length() < min ? true : false;
 	}

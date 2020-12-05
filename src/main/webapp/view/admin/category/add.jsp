@@ -44,6 +44,7 @@
                     <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
                       <div class="dropdown-header">Lựa chọn khác:</div>
                       <a class="dropdown-item" href="<%= request.getContextPath() + "/admin-category-list"%>">Xem danh sách các danh mục</a>
+                      
                     </div>
                   </div>
                 </div>

@@ -26,7 +26,7 @@ public class BrandDAO extends AbstactDAO<BrandModel> implements IBrandDAO {
 	}
 
 	@Override
-	public List<BrandModel> findAllByCategoryId(int id) {
+	public List<BrandModel> findAllByCategoryId(String id) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -51,7 +51,7 @@ public class BrandDAO extends AbstactDAO<BrandModel> implements IBrandDAO {
 	}
 
 	@Override
-	public BrandModel findOneById(Long id) {
+	public BrandModel findOneById(String id) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("SELECT brand.*, category.name AS category_name, category.alias AS category_alias FROM brand");
 		sql.append(" JOIN category ON brand.category_id = category.id");
@@ -71,7 +71,7 @@ public class BrandDAO extends AbstactDAO<BrandModel> implements IBrandDAO {
 	}
 
 	@Override
-	public boolean update(BrandModel model, Long id) {
+	public boolean update(BrandModel model, String id) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("UPDATE brand");
 		sql.append(" SET name = ?, alias = ?, status = ?, category_id = ?, updated_date = ?, updated_by = ?");
@@ -106,6 +106,14 @@ public class BrandDAO extends AbstactDAO<BrandModel> implements IBrandDAO {
 		sql.append(" WHERE category.alias = ? AND brand.alias = ?");
 		List<BrandModel> list = query(sql.toString(), new BrandMapper(), categoryAlias, alias);
 		return list.size() != 0 ? list.get(0) : null;
+	}
+
+	@Override
+	public boolean delete(String id) {
+		StringBuilder sql = new StringBuilder();
+		sql.append("DELETE FROM brand");
+		sql.append(" WHERE id = ?;");
+		return excute(sql.toString(), id);
 	}
 
 }

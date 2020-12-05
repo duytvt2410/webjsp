@@ -37,12 +37,27 @@
 <div id="notificationModal" class="modal fade">
 	<div class="modal-dialog modal-confirm">
 		<div class="modal-content">
-			<div class="modal-header">	
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-			</div>
 			<%
 				if(request.getAttribute("alert") != null) {
 			%>
+			<div class="modal-header">	
+				<%
+					if(request.getAttribute("alert").equals("success")) {
+						
+						
+				%>
+						<button type="button" class="close" onclick="window.location = window.location.href.split('?')[0];">&times;</button>
+						
+				<%
+					} else {
+				%>
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>		
+				<%
+					} 
+				%>
+                
+			</div>
+			
 			<div class="text-center">
 			
 				<%
@@ -62,8 +77,7 @@
 			<div class="modal-footer">
 				<%
 					if(request.getAttribute("alert").equals("success")) {
-						Long id = 0L;
-						if(request.getParameter("id") != null) id = Long.parseLong(request.getParameter("id"));
+						
 						
 				%>
 						<button type="button" class="btn btn-secondary" onclick="window.location = window.location.href.split('?')[0];">Đóng</button>	

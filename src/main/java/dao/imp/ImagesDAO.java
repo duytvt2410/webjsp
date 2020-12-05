@@ -2,7 +2,6 @@ package dao.imp;
 
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 
 import dao.InterfaceImagesDAO;
 import mapper.ImagesMapper;
@@ -22,13 +21,13 @@ private static ImagesDAO dao = null;
 	@Override
 	public boolean insert(ImagesModel model) {
 		StringBuilder sql = new StringBuilder();
-		sql.append("INSERT INTO images (id, product_id, type, photo)");
-		sql.append(" VALUES (?, ?, ?, ?)");
-		return excute(sql.toString(), model.getId(), model.getProduct_Id(), model.getType(), model.getByteImage());
+		sql.append("INSERT INTO images (id, product_id, type, name, photo)");
+		sql.append(" VALUES (?, ?, ?, ?, ?)");
+		return excute(sql.toString(), model.getId(), model.getProduct_Id(), model.getType(),model.getName(), model.getPhoto());
 	}
 
 	@Override
-	public List<ImagesModel> findAllByProductId(Long id) {
+	public List<ImagesModel> findAllByProductId(String id) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("SELECT * FROM images");
 		sql.append(" WHERE product_id = ?");
@@ -36,11 +35,27 @@ private static ImagesDAO dao = null;
 	}
 
 	@Override
-	public boolean deleteByProductIdAndType(Long id, String type) {
+	public boolean deleteByProductIdAndType(String id, String type) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("DELETE FROM images");
 		sql.append(" WHERE product_id = ? AND type = ?");
 		return excute(sql.toString(), id, type);
 	}
+
+	@Override
+	public List<ImagesModel> findAllByProductIdAndType(String id, String type) {
+		StringBuilder sql = new StringBuilder();
+		sql.append("SELECT * FROM images");
+		sql.append(" WHERE product_id = ? AND type = ?");
+		return query(sql.toString(), new ImagesMapper(), id, type);
+	}
+
+	@Override
+	public List<ImagesModel> findAll() {
+		StringBuilder sql = new StringBuilder();
+		sql.append("SELECT * FROM images");
+		return query(sql.toString(), new ImagesMapper());
+	}
+
 	
 }

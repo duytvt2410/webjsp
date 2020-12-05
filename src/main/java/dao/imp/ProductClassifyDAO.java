@@ -29,7 +29,7 @@ private static ProductClassifyDAO dao = null;
 
 	
 	@Override
-	public boolean update(ProductClassifyModel model, Long id) {
+	public boolean update(ProductClassifyModel model, String id) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("UPDATE category");
 		sql.append(" SET name = ?, alias = ?, status = ?, is_accessories = ?, updated_date = ?, updated_by = ?");
@@ -40,9 +40,9 @@ private static ProductClassifyDAO dao = null;
 	 
 
 	@Override
-	public List<ProductClassifyModel> findAllByProductId(Long id) {
+	public List<ProductClassifyModel> findAllByProductId(String id) {
 		StringBuilder sql = new StringBuilder();
-		sql.append("SELECT product_classify.* FROM product_classify ");
+		sql.append("SELECT product_classify.*, classify.name AS classify_name FROM product_classify ");
 		sql.append(" JOIN product ON product_classify.product_id = product.id JOIN classify ON product_classify.classify_id = classify.id");
 		sql.append(" WHERE product_classify.product_id = ?");
 		return query(sql.toString(), new ProductClassifyMapper(), id);
@@ -50,11 +50,21 @@ private static ProductClassifyDAO dao = null;
 
 
 	@Override
-	public boolean deleteByProductId(Long id) {
+	public boolean deleteByProductId(String id) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("DELETE FROM product_classify");
 		sql.append(" WHERE product_id = ?");
 		return excute(sql.toString(), id);
+	}
+
+
+	@Override
+	public List<ProductClassifyModel> findAllByClassifyId(String id) {
+		StringBuilder sql = new StringBuilder();
+		sql.append("SELECT product_classify.*, classify.name AS classify_name FROM product_classify ");
+		sql.append(" JOIN product ON product_classify.product_id = product.id JOIN classify ON product_classify.classify_id = classify.id");
+		sql.append(" WHERE product_classify.classify_id = ?");
+		return query(sql.toString(), new ProductClassifyMapper(), id);
 	}
 
 

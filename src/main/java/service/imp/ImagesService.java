@@ -30,19 +30,32 @@ public class ImagesService implements InterfaceImagesService{
 		String id = String.valueOf(rand.nextInt(101) + 100);
 		
 		id += String.valueOf(new Date().getTime());
-		model.setId(Long.parseLong(id));
+		model.setId(id);
 		
 		return imageDAO.insert(model);
 	}
 
 	@Override
-	public List<ImagesModel> findAllByProductId(Long id) {
+	public List<ImagesModel> findAllByProductId(String id) {
 		return imageDAO.findAllByProductId(id);
 	}
 
 	@Override
-	public boolean deleteByProductIdAndType(Long id, String type) {
+	public boolean deleteByProductIdAndType(String id, String type) {
 		return imageDAO.deleteByProductIdAndType(id, type);
+	}
+
+
+	@Override
+	public List<ImagesModel> findAllByProductIdAndType(String id, String type) {
+		
+		return imageDAO.findAllByProductIdAndType(id, type);
+	}
+
+
+	@Override
+	public List<ImagesModel> findAll() {
+		return imageDAO.findAll();
 	}
 
 }

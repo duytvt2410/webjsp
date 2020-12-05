@@ -21,8 +21,9 @@ import service.imp.BrandService;
 import service.imp.CategoryService;
 import service.imp.ClassifyService;
 import service.imp.ProductService;
+import utils.SystemContain;
 
-@WebServlet(urlPatterns = { "/dienthoai", "/laptop", "/phukien" })
+@WebServlet(urlPatterns = { "/dienthoai", "/laptop","/phukien", "/phantrang" })
 public class StoreController extends HttpServlet {
 	/**
 	 * 
@@ -43,7 +44,9 @@ public class StoreController extends HttpServlet {
 		String filterBrand = request.getParameter("nsx");
 		String filterClassify[] = request.getParameterValues("nhomsp");
 
+		boolean isUseSendRedirect = false;
 		String url = request.getRequestURI();
+
 		List<BrandModel> listBrand = null;
 		List<ClassifyModel> listClassify = null;
 		List<CategoryModel> listCategory = null;
@@ -72,43 +75,20 @@ public class StoreController extends HttpServlet {
 			sqlConditon += " ) GROUP  BY product.id HAVING Count(DISTINCT product_classify.classify_id) = "
 					+ filterClassify.length;
 		}
+		String phantrang = request.getParameter("phantrang");
+		int first = 1;
+		int page = 1;
+		int limit = 6;
+		int length = 0;
+		if (phantrang != null) {
+			first = Integer.parseInt(request.getParameter("first"));
+			page = Integer.parseInt(request.getParameter("page"));
+		}
 
-		if (url.startsWith(request.getContextPath() + "/dienthoai")) {
-			listBrand = brandService.findAllByCategoryAliasAndStatus("dien-thoai", "active");
-			listClassify = classifyService.findAllByCategoryAliasAndStatus("dien-thoai", "active");
-
-			String[] arrPararameter = paramer.split("dt14082410dt");
-			Long ids[] = new Long[arrPararameter.length];
-			try {
-				for (int i = 0; i < arrPararameter.length; i++) {
-					ids[i] = Long.parseLong(arrPararameter[i]);
-
-				}
-				listProduct = productService.findAllCustomCondition(sqlConditon, "dien-thoai", "active", ids);
-			} catch (Exception e) {
-				listProduct = productService.findAllCustomCondition("", "dien-thoai", "active", arrPararameter);
-			}
-
-		} else if (url.startsWith(request.getContextPath() + "/laptop")) {
-			listBrand = brandService.findAllByCategoryAliasAndStatus("laptop", "active");
-			listClassify = classifyService.findAllByCategoryAliasAndStatus("laptop", "active");
-
-			String[] arrPararameter = paramer.split("dt14082410dt");
-			Long ids[] = new Long[arrPararameter.length];
-			try {
-				for (int i = 0; i < arrPararameter.length; i++) {
-					ids[i] = Long.parseLong(arrPararameter[i]);
-
-				}
-				listProduct = productService.findAllCustomCondition(sqlConditon, "laptop", "active", ids);
-			} catch (Exception e) {
-				listProduct = productService.findAllCustomCondition("", "laptop", "active", arrPararameter);
-			}
-
-		} else if (url.startsWith(request.getContextPath() + "/phukien")) {
+		if (url.startsWith(request.getContextPath() + "/phukien")) {
 			listCategory = categoryService.findAllByIsAccessoriesAndStatus("yes", "active");
 			String theloai = request.getParameter("theloai");
-			if(theloai != null && !theloai.equals("")) {
+			if (theloai != null && !theloai.equals("")) {
 				listBrand = brandService.findAllByCategoryAliasAndStatus(theloai, "active");
 				listClassify = classifyService.findAllByCategoryAliasAndStatus(theloai, "active");
 				request.setAttribute("theloai", theloai);
@@ -119,14 +99,19 @@ public class StoreController extends HttpServlet {
 						ids[i] = Long.parseLong(arrPararameter[i]);
 
 					}
-					listProduct = productService.findAllCustomCondition(sqlConditon, theloai, "active", ids);
+					listProduct = productService.findAllCustomCondition(sqlConditon, theloai, "active", limit, first - 1,
+							ids);
+					length = productService.countAllCustomCondition(sqlConditon, theloai, "active", ids);
 				} catch (Exception e) {
-					listProduct = productService.findAllCustomCondition("", theloai, "active", arrPararameter);
+					listProduct = productService.findAllCustomCondition("", theloai, "active", limit, first - 1,
+							arrPararameter);
+					length = productService.countAllCustomCondition("", theloai, "active", arrPararameter);
 				}
 			} else {
-				if(listCategory != null) {
+				if (listCategory.size() != 0) {
 					listBrand = brandService.findAllByCategoryAliasAndStatus(listCategory.get(0).getAlias(), "active");
-					listClassify = classifyService.findAllByCategoryAliasAndStatus(listCategory.get(0).getAlias(), "active");
+					listClassify = classifyService.findAllByCategoryAliasAndStatus(listCategory.get(0).getAlias(),
+							"active");
 					request.setAttribute("theloai", listCategory.get(0).getAlias());
 					String[] arrPararameter = paramer.split("dt14082410dt");
 					Long ids[] = new Long[arrPararameter.length];
@@ -135,18 +120,86 @@ public class StoreController extends HttpServlet {
 							ids[i] = Long.parseLong(arrPararameter[i]);
 
 						}
-						listProduct = productService.findAllCustomCondition(sqlConditon, listCategory.get(0).getAlias(), "active", ids);
+						listProduct = productService.findAllCustomCondition(sqlConditon, listCategory.get(0).getAlias(),
+								"active", limit, first - 1, ids);
+						length = productService.countAllCustomCondition(sqlConditon, listCategory.get(0).getAlias(),
+								"active", ids);
 					} catch (Exception e) {
-						listProduct = productService.findAllCustomCondition("", listCategory.get(0).getAlias(), "active", arrPararameter);
+						listProduct = productService.findAllCustomCondition("", listCategory.get(0).getAlias(),
+								"active", limit, first - 1, arrPararameter);
+						length = productService.countAllCustomCondition("", listCategory.get(0).getAlias(), "active",
+								arrPararameter);
 					}
 				}
 			}
+		} else if (url.startsWith(request.getContextPath() + "/dienthoai")) {
+			listBrand = brandService.findAllByCategoryAliasAndStatus("dien-thoai", "active");
+			if (listBrand.size() != 0) {
+				listClassify = classifyService.findAllByCategoryAliasAndStatus("dien-thoai", "active");
+
+				String[] arrPararameter = paramer.split("dt14082410dt");
+				Long ids[] = new Long[arrPararameter.length];
+				try {
+					for (int i = 0; i < arrPararameter.length; i++) {
+						ids[i] = Long.parseLong(arrPararameter[i]);
+
+					}
+					listProduct = productService.findAllCustomCondition(sqlConditon, "dien-thoai", "active", limit, first - 1,
+							ids);
+					length = productService.countAllCustomCondition(sqlConditon, "dien-thoai", "active", ids);
+				} catch (Exception e) {
+					listProduct = productService.findAllCustomCondition("", "dien-thoai", "active", limit, first - 1,
+							arrPararameter);
+					length = productService.countAllCustomCondition("", "dien-thoai", "active", arrPararameter);
+				}
+			} else {
+				isUseSendRedirect = true;
+			}
+
+		} else if(url.startsWith(request.getContextPath() + "/laptop")) {
+			listBrand = brandService.findAllByCategoryAliasAndStatus("laptop", "active");
+			if (listBrand.size() != 0) {
+				listClassify = classifyService.findAllByCategoryAliasAndStatus("laptop", "active");
+
+				String[] arrPararameter = paramer.split("dt14082410dt");
+				Long ids[] = new Long[arrPararameter.length];
+				try {
+					for (int i = 0; i < arrPararameter.length; i++) {
+						ids[i] = Long.parseLong(arrPararameter[i]);
+
+					}
+					listProduct = productService.findAllCustomCondition(sqlConditon, "laptop", "active", limit, first - 1,
+							ids);
+					length = productService.countAllCustomCondition(sqlConditon, "laptop", "active", ids);
+				} catch (Exception e) {
+					listProduct = productService.findAllCustomCondition("", "laptop", "active", limit, first - 1,
+							arrPararameter);
+					length = productService.countAllCustomCondition("", "laptop", "active", arrPararameter);
+				}
+			} else {
+				isUseSendRedirect = true;
+			}
 		}
-		request.setAttribute("listCategory", listCategory);
-		request.setAttribute("listBrand", listBrand);
-		request.setAttribute("listClassify", listClassify);
-		request.setAttribute("listProduct", listProduct);
-		request.getRequestDispatcher("view/web/store.jsp").forward(request, response);
+
+		if (isUseSendRedirect == true) {
+			response.sendRedirect(request.getContextPath() + "/trangchu");
+		} else {
+			request.setAttribute("listCategory", listCategory);
+			request.setAttribute("listBrand", listBrand);
+			request.setAttribute("listClassify", listClassify);
+			request.setAttribute("listProduct", listProduct);
+			request.setAttribute("first", first);
+			request.setAttribute("page", page);
+			request.setAttribute("limit", limit);
+			request.setAttribute("length", length);
+
+			if (phantrang != null) {
+				request.getRequestDispatcher("view/web/getPageProduct.jsp").forward(request, response);
+			} else {
+				request.getRequestDispatcher(SystemContain.URL_PAGE_STORE).forward(request, response);
+
+			}
+		}
 
 	}
 

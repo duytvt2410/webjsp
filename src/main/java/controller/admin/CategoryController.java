@@ -11,9 +11,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import model.CategoryModel;
+import model.UserModel;
 import service.ICategoryService;
 import service.imp.CategoryService;
-import utils.Utils;
+import utils.SessionUtil;
+import utils.SystemContain;
 
 @WebServlet(urlPatterns = { "/admin-category-add", "/admin-category-list", "/admin-category-edit",
 		"/admin-category-delete", "/admin-category-view" })
@@ -27,83 +29,37 @@ public class CategoryController extends HttpServlet {
 
 	private String option = null;
 
+	private String url = null;
+
+	private boolean isUseSendRedirect, isDelete;
+
+	private CategoryModel model;
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		request.setCharacterEncoding("UTF-8");
 
-		boolean isUseSendRedirect = false;
+		isUseSendRedirect = false;
+		isDelete = false;
+		url = request.getRequestURI();
 
-		String type = Utils.getUrlPatterns(request.getServletPath());
-
-		String url = getURLPage(request.getServletPath());
-
-		if (type.equalsIgnoreCase("admin-category-add")) {
-		} else if (type.equalsIgnoreCase("admin-category-list")) {
-			String isAccessories = request.getParameter("isAccessories");
-			String status = request.getParameter("status");
-			if (isAccessories != null && status != null) {
-				request.setAttribute("isAccessories", isAccessories);
-				request.setAttribute("status", status);
-				if (isAccessories.equalsIgnoreCase("all") && status.equalsIgnoreCase("all")) {
-					request.setAttribute("listCategory", categoryService.findAll());
-				} else {
-					request.setAttribute("listCategory",
-							categoryService.findAllByIsAccessoriesAndStatus(isAccessories, status));
-				}
-			} else {
-				request.setAttribute("isAccessories", "all");
-				request.setAttribute("status", "active");
-				request.setAttribute("listCategory", categoryService.findAllByIsAccessoriesAndStatus("all", "active"));
-			}
-		} else if (type.equalsIgnoreCase("admin-category-edit")) {
-			if (request.getParameter("id") != null) {
-				try {
-					request.setAttribute("categoryModel",
-							categoryService.findOneById(Long.parseLong(request.getParameter("id"))));
-				} catch (Exception e) {
-					isUseSendRedirect = true;
-				}
-
-			} else {
-				isUseSendRedirect = true;
-
-			}
-		} else if (type.equalsIgnoreCase("admin-category-view")) {
-			if (request.getParameter("id") != null) {
-				try {
-					request.setAttribute("categoryModel",
-							categoryService.findOneById(Long.parseLong(request.getParameter("id"))));
-				} catch (Exception e) {
-					isUseSendRedirect = true;
-				}
-
-			} else {
-				isUseSendRedirect = true;
-
-			}
-		} else if (type.equalsIgnoreCase("admin-category-delete")) {
-			if (request.getParameter("id") != null) {
-				Map<String, String> map = null;
-				try {
-					map = categoryService.delete(Long.parseLong(request.getParameter("id")));
-				
-				} catch (Exception e) {
-					isUseSendRedirect = true;
-				}
-
-				Set<String> set = map.keySet();
-
-				for (String key : set) {
-					request.setAttribute("alert", key);
-					request.setAttribute("message", map.get(key));
-				}
-			} else {
-				isUseSendRedirect = true;
-			}
+		if (url.startsWith(request.getContextPath() + "/admin-category-add")) {
+			getPageAdd(request);
+		} else if (url.startsWith(request.getContextPath() + "/admin-category-list")) {
+			getPageList(request);
+		} else if (url.startsWith(request.getContextPath() + "/admin-category-edit")) {
+			getPageEdit(request);
+		} else if (url.startsWith(request.getContextPath() + "/admin-category-view")) {
+			getPageView(request);
+		} else if (url.startsWith(request.getContextPath() + "/admin-category-delete") && request.getParameter("option") != null) {
+			doPost(request, response);
+			isDelete = true;
+		} else if (url.startsWith(request.getContextPath() + "/admin-category-delete")) {
+			isUseSendRedirect = true;
 		}
 		if (isUseSendRedirect == true) {
 			response.sendRedirect(request.getContextPath() + "/admin-category-list");
-		} else {
+		} else if(isDelete == false){
 			request.getRequestDispatcher(url).forward(request, response);
 		}
 
@@ -113,59 +69,109 @@ public class CategoryController extends HttpServlet {
 			throws ServletException, IOException {
 		request.setCharacterEncoding("UTF-8");
 		option = request.getParameter("option");
-
+		isUseSendRedirect = false;
 		if (option != null) {
-
-			CategoryModel model = new CategoryModel();
-
-			try {
-				if (request.getParameter("id") != null)
-					model.setId(Long.parseLong(request.getParameter("id")));
-			} catch (Exception e) {
-				model.setId(0L);
-			}
-
-			model.setName(request.getParameter("category_name"));
-			model.setStatus(request.getParameter("status"));
-			model.setIsAccessories(request.getParameter("isAccessories"));
-
+			model = getModelFromForm(request);
+			UserModel user = (UserModel) SessionUtil.getInstance().getValue(request, "User");
+			
 			Map<String, String> map = null;
 			if (option.equalsIgnoreCase("add")) {
-				map = categoryService.insert(model);
+				model.setCreateBy(user.getId());
+				map = addProcess(request);
 			} else if (option.equalsIgnoreCase("edit")) {
-				map = categoryService.update(model, model.getId());
-			} else {
-				map = categoryService.delete(model.getId());
+				model.setUpdateBy(user.getId());
+				map = editProcess(request);
+			} else if (option.equalsIgnoreCase("delete")) {
+				map = deleteProcess(request);
 			}
-
 			Set<String> set = map.keySet();
-
+			String alert = "";
+			String message = "";
 			for (String key : set) {
-				request.setAttribute("alert", key);
-				request.setAttribute("message", map.get(key));
+				alert = key;
+				message = map.get(key);
 			}
 
+			request.setAttribute("alert", alert);
+			request.setAttribute("message", message);
 			request.setAttribute("categoryModel", model);
-			request.getRequestDispatcher(getURLPage(request.getServletPath())).forward(request, response);
+			request.getRequestDispatcher(url).forward(request, response);
+
 		} else {
 			doGet(request, response);
 		}
 	}
 
-	private String getURLPage(String type) {
-		String url = null;
-		type = Utils.getUrlPatterns(type);
-		if (type.equalsIgnoreCase("admin-category-add")) {
-			url = "view/admin/category/add.jsp";
-		} else if (type.equalsIgnoreCase("admin-category-list")) {
-			url = "view/admin/category/list.jsp";
-		} else if (type.equalsIgnoreCase("admin-category-edit")) {
-			url = "view/admin/category/edit.jsp";
-		} else if (type.equalsIgnoreCase("admin-category-view")) {
-			url = "view/admin/category/view.jsp";
-		} else if (type.equalsIgnoreCase("admin-category-delete")) {
-			url = "view/admin/category/empty.jsp";
-		}
-		return url;
+	private CategoryModel getModelFromForm(HttpServletRequest request) {
+		CategoryModel model = new CategoryModel();
+		if (request.getParameter("id") != null)
+			model.setId(request.getParameter("id"));
+		model.setName(request.getParameter("category_name"));
+		model.setStatus(request.getParameter("status"));
+		model.setIsAccessories(request.getParameter("isAccessories"));
+		return model;
 	}
+
+	private void getPageAdd(HttpServletRequest request) {
+		this.url = SystemContain.URL_PAGE_CATEGORY_ADD;
+	}
+
+	private void getPageList(HttpServletRequest request) {
+		String isAccessories = request.getParameter("isAccessories");
+		String status = request.getParameter("status");
+		if (isAccessories != null && status != null) {
+			request.setAttribute("isAccessories", isAccessories);
+			request.setAttribute("status", status);
+				request.setAttribute("listCategory",
+						categoryService.findAllByIsAccessoriesAndStatus(isAccessories, status));
+			
+		} else {
+			request.setAttribute("isAccessories", "yes");
+			request.setAttribute("status", "active");
+			request.setAttribute("listCategory", categoryService.findAllByIsAccessoriesAndStatus("yes", "active"));
+		}
+		url = SystemContain.URL_PAGE_CATEGORY_LIST;
+	}
+
+	private void getPageEdit(HttpServletRequest request) {
+		if (request.getParameter("id") != null) {
+			request.setAttribute("categoryModel", categoryService.findOneById(request.getParameter("id")));
+		} else {
+			isUseSendRedirect = true;
+		}
+		url = SystemContain.URL_PAGE_CATEGORY_EDIT;
+	}
+
+	private void getPageView(HttpServletRequest request) {
+		if (request.getParameter("id") != null) {
+			request.setAttribute("categoryModel", categoryService.findOneById(request.getParameter("id")));
+		} else {
+			isUseSendRedirect = true;
+
+		}
+		url = SystemContain.URL_PAGE_CATEGORY_VIEW;
+	}
+
+	private Map<String, String> deleteProcess(HttpServletRequest request) {
+		url = "view/admin/delete.jsp";
+		String id [] = request.getParameter("id").split(",");
+		if(id!= null && id.length == 1) {
+			return categoryService.delete(id[0]);
+		}
+		else {
+			return categoryService.deleteAll(id);
+		}
+	}
+
+	private Map<String, String> addProcess(HttpServletRequest request) {
+		url = SystemContain.URL_PAGE_CATEGORY_ADD;
+		return categoryService.insert(model);
+	}
+
+	private Map<String, String> editProcess(HttpServletRequest request) {
+
+		url = SystemContain.URL_PAGE_CATEGORY_EDIT;
+		return categoryService.update(model, model.getId());
+	}
+
 }

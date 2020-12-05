@@ -1,7 +1,7 @@
 package model;
 
 public class BrandModel extends AbstractModel{
-	private Long categoryId;
+	private String categoryId;
 	private String categoryAlias, categoryName;
 
 	public String getCategoryName() {
@@ -12,11 +12,11 @@ public class BrandModel extends AbstractModel{
 		this.categoryName = categoryName;
 	}
 
-	public Long getCategoryId() {
+	public String getCategoryId() {
 		return categoryId;
 	}
 
-	public void setCategoryId(Long categoryId) {
+	public void setCategoryId(String categoryId) {
 		this.categoryId = categoryId;
 	}
 

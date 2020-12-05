@@ -4,34 +4,27 @@ import java.util.Collection;
 import java.util.HashMap;
 
 public class Cart {
-	private HashMap<Long, ProductModel> data;
+	private HashMap<String, ProductModel> data;
 
 	public Cart() {
-		this.data = new HashMap<Long, ProductModel>();
+		this.data = new HashMap<String, ProductModel>();
 	}
 
-	public ProductModel get(Long id) {
+	public ProductModel get(String id) {
 		return data.get(id);
 	}
 
-	public int put(ProductModel item) {
+	public int put(ProductModel item, int quantity) {
 		if (data.containsKey(item.getId())) {
-			data.get(item.getId()).updateQtyInCart();;
+			data.get(item.getId()).updateQtyInCart(quantity);;
 		} else {
-			item.updateQtyInCart();
+			item.updateQtyInCart(quantity);;
 			data.put(item.getId(), item);
 		}
-		return data.get(item.getId()).getQty();
+		return data.get(item.getId()).getQtyInCart();
 	}
-
-	public int put(Long id, int quantity) {
-		if (data.containsKey(id))
-			data.get(id).updateQtyInCart(quantity);
-		return data.get(id).getQtyInCart();
-	}
-
 	// xoa sp
-	public boolean remove(Long id) {
+	public boolean remove(String id) {
 		return data.remove(id) == null;
 	}
 

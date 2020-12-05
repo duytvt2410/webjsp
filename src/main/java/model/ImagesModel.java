@@ -1,28 +1,25 @@
 package model;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Base64;
-
-import org.apache.commons.io.IOUtils;
-
 public class ImagesModel {
-	private Long id;
-	private Long product_Id;
+	private String id;
+	private String product_Id;
+	private String name;
 	private String type;
-	private InputStream inputImage;
-	private byte [] byteImage;
-	public void setByteImage(byte[] byteImage) {
-		this.byteImage = byteImage;
+	private String photo;
+
+	public String getPhoto() {
+		return photo;
 	}
 
-	public Long getProduct_Id() {
+	public void setPhoto(String photo) {
+		this.photo = photo;
+	}
+
+	public String getProduct_Id() {
 		return product_Id;
 	}
 
-	public void setProduct_Id(Long product_Id) {
+	public void setProduct_Id(String product_Id) {
 		this.product_Id = product_Id;
 	}
 
@@ -34,83 +31,20 @@ public class ImagesModel {
 		this.type = type;
 	}
 
-	public Long getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
-
-//	public String getBase64Image() {
-//		String base64Image = null;
-//		try {
-//			InputStream inputStream;
-//			inputStream = this.blob.getBinaryStream();
-//
-//			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-//			byte[] buffer = new byte[4096];
-//			int bytesRead = -1;
-//
-//			while ((bytesRead = inputStream.read(buffer)) != -1) {
-//				outputStream.write(buffer, 0, bytesRead);
-//			}
-//
-//			byte[] imageBytes = outputStream.toByteArray();
-//			base64Image = Base64.getEncoder().encodeToString(imageBytes);
-//
-//			inputStream.close();
-//			outputStream.close();
-//		} catch (IOException | SQLException e) {
-//			return "";
-//		}
-//
-//		return base64Image;
-//	}
 	
-	public String getBase64Image() {
-		String base64Image = "";
-		try {
-			InputStream inputStream;
-			inputStream = new ByteArrayInputStream(this.byteImage);
-
-			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-			byte[] buffer = new byte[4096];
-			int bytesRead = -1;
-
-			while ((bytesRead = inputStream.read(buffer)) != -1) {
-				outputStream.write(buffer, 0, bytesRead);
-			}
-
-			byte[] imageBytes = outputStream.toByteArray();
-			base64Image = Base64.getEncoder().encodeToString(imageBytes);
-
-			inputStream.close();
-			outputStream.close();
-		} catch (IOException e) {
-			return "";
-		}
-
-		return base64Image;
+	public String getName() {
+		return name;
 	}
 
-	public InputStream getInputImage() {
-		return inputImage;
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	public void setInputImage(InputStream inputImage) {
-		this.inputImage = inputImage;
-	}
-
-
-	public byte[] getByteImage() {
-		byte[] b = null;
-		try {
-			b = IOUtils.toByteArray(this.inputImage);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return b;
-	}
 }

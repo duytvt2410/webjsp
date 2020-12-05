@@ -1,10 +1,18 @@
 package model;
 
 public class ProductClassifyModel extends AbstractModel{
-	private Long productId;
+	private String productId;
 	
-	private Long classifyId;
+	private String classifyId;
 	
+	private String classifyName;
+	
+	public String getClassifyName() {
+		return classifyName;
+	}
+	public void setClassifyName(String classifyName) {
+		this.classifyName = classifyName;
+	}
 	private String productAlias;
 	
 	public String getProductAlias() {
@@ -13,16 +21,16 @@ public class ProductClassifyModel extends AbstractModel{
 	public void setProductAlias(String productAlias) {
 		this.productAlias = productAlias;
 	}
-	public Long getProductId() {
+	public String getProductId() {
 		return productId;
 	}
-	public void setProductId(Long productId) {
+	public void setProductId(String productId) {
 		this.productId = productId;
 	}
-	public Long getClassifyId() {
+	public String getClassifyId() {
 		return classifyId;
 	}
-	public void setClassifyId(Long classifyId) {
+	public void setClassifyId(String classifyId) {
 		this.classifyId = classifyId;
 	}
 	

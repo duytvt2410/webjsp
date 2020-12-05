@@ -12,10 +12,11 @@ public class ProductClassifyMapper implements RowMapper<ProductClassifyModel> {
 		ProductClassifyModel model = new ProductClassifyModel();
 		
 		try {
-			model.setId(resultSet.getLong("id"));
+			model.setId(resultSet.getString("id"));
 			model.setAlias(resultSet.getString("alias"));
-			model.setProductId(resultSet.getLong("product_id"));
-			model.setClassifyId(resultSet.getLong("classify_id"));
+			model.setProductId(resultSet.getString("product_id"));
+			model.setClassifyId(resultSet.getString("classify_id"));
+			model.setClassifyName(resultSet.getString("classify_name"));
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			return null;

@@ -10,8 +10,8 @@ public interface ICategoryDAO {
 	List<CategoryModel> findAllByStatus(String status);
 	List<CategoryModel> findAllByIsAccessoriesAndStatus(String isAccessories, String status); 
 	CategoryModel findOneByAlias(String alias);
-	CategoryModel findOneById(Long id);
+	CategoryModel findOneById(String id);
 	boolean insert(CategoryModel model);
-	boolean update(CategoryModel model, Long id);
-	boolean delete(Long id);
+	boolean update(CategoryModel model, String id);
+	boolean delete(String id);
 }

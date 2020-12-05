@@ -13,13 +13,15 @@ import javax.servlet.http.HttpServletResponse;
 
 import model.CategoryModel;
 import model.ClassifyModel;
+import model.UserModel;
 import service.ICategoryService;
 import service.IClassifyService;
 import service.imp.CategoryService;
 import service.imp.ClassifyService;
-import utils.Utils;
+import utils.SessionUtil;
+import utils.SystemContain;
 
-@WebServlet(urlPatterns = { "/admin-classify-add", "/admin-classify-list", "/admin-classify-edit",
+@WebServlet(urlPatterns = { "/admin-classify-add", "/admin-classify-list","/admin-classify-delete", "/admin-classify-edit",
 		"/admin-classify-view" })
 public class ClassifyController extends HttpServlet {
 	/**
@@ -29,6 +31,12 @@ public class ClassifyController extends HttpServlet {
 
 	private String option = null;
 
+	private String url = null;
+
+	private boolean isUseSendRedirect, isDelete;
+
+	private ClassifyModel model;
+
 	private ICategoryService categoryService = CategoryService.getInstance();
 
 	private IClassifyService classifyService = ClassifyService.getInstance();
@@ -36,69 +44,27 @@ public class ClassifyController extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		String url = null;
+		isUseSendRedirect = false;
+		isDelete = false;
+		url = request.getRequestURI();
 
-		boolean isUseSendRedirect = false;
-
-		String type = Utils.getUrlPatterns(request.getServletPath());
-		if (type.equalsIgnoreCase("admin-classify-add")) {
-			request.setAttribute("listCategory", categoryService.findAllByStatus("active"));
-			url = "view/admin/classify/add.jsp";
-		} else if (type.equalsIgnoreCase("admin-classify-list")) {
-			List<CategoryModel> listCategory = categoryService.findAllByStatus("active");
-			String categoryAlias = request.getParameter("categoryAlias");
-			String status = request.getParameter("status");
-			if (categoryAlias != null && status != null) {
-				request.setAttribute("categoryAlias", categoryAlias);
-				request.setAttribute("status", status);
-
-				if (categoryAlias.equalsIgnoreCase("all") && status.equalsIgnoreCase("all")) {
-					request.setAttribute("listClassify", classifyService.findAll());
-				} else {
-					request.setAttribute("listClassify",
-							classifyService.findAllByCategoryAliasAndStatus(categoryAlias, status));
-				}
-			} else {
-				if(listCategory.size() != 0) {
-				request.setAttribute("categoryAlias", listCategory.get(0).getAlias());
-				request.setAttribute("status", "active");
-				request.setAttribute("listClassify",
-						classifyService.findAllByCategoryAliasAndStatus(listCategory.get(0).getAlias(), "active"));
-				} else {
-					request.setAttribute("categoryAlias", "all");
-					request.setAttribute("status", "active");
-					request.setAttribute("listClassify",
-							classifyService.findAllByCategoryAliasAndStatus("all", "active"));
-				}
-			}
-			request.setAttribute("listCategory", listCategory);
-			url = "view/admin/classify/list.jsp";
-		} else if (type.equalsIgnoreCase("admin-classify-edit")) {
-			if (request.getParameter("id") != null) {
-				request.setAttribute("listCategory", categoryService.findAllByStatus("active"));
-				
-				try {
-					request.setAttribute("classifyModel", classifyService.findOneById(Long.parseLong(request.getParameter("id"))));
-				} catch (Exception e) {
-					isUseSendRedirect = true;
-				}
-				
-				url = "view/admin/classify/edit.jsp";
-			} else {
-				isUseSendRedirect = true;
-
-			}
-		} else if (type.equalsIgnoreCase("admin-classify-view")) {
-			try {
-				request.setAttribute("classifyModel", classifyService.findOneById(Long.parseLong(request.getParameter("id"))));
-			} catch (Exception e) {
-				isUseSendRedirect = true;
-			}
-			url = "view/admin/classify/view.jsp";
+		if (url.startsWith(request.getContextPath() + "/admin-classify-add")) {
+			getPageAdd(request);
+		} else if (url.startsWith(request.getContextPath() + "/admin-classify-list")) {
+			getPageList(request);
+		} else if (url.startsWith(request.getContextPath() + "/admin-classify-edit")) {
+			getPageEdit(request);
+		} else if (url.startsWith(request.getContextPath() + "/admin-classify-view")) {
+			getPageView(request);
+		} else if (url.startsWith(request.getContextPath() + "/admin-classify-delete") && request.getParameter("option") != null) {
+			doPost(request, response);
+			isDelete = true;
+		}else if (url.startsWith(request.getContextPath() + "/admin-classify-delete")) {
+			isUseSendRedirect = true;
 		}
 		if (isUseSendRedirect == true) {
 			response.sendRedirect(request.getContextPath() + "/admin-classify-list");
-		} else {
+		} else if(isDelete == false){
 			request.getRequestDispatcher(url).forward(request, response);
 		}
 	}
@@ -107,51 +73,105 @@ public class ClassifyController extends HttpServlet {
 			throws ServletException, IOException {
 		request.setCharacterEncoding("UTF-8");
 		option = request.getParameter("option");
+		isUseSendRedirect = false;
 		if (option != null) {
-			ClassifyModel model = new ClassifyModel();
-			try {
-				if(request.getParameter("id") != null) model.setId(Long.parseLong(request.getParameter("id")));
-			} catch (Exception e) {
-				model.setId(0L);
-			}
-			model.setName(request.getParameter("classify_name"));
-			model.setStatus(request.getParameter("status"));
-			model.setCategoryAlias(request.getParameter("category"));
-
+			model = getModelFromForm(request);
+			UserModel user = (UserModel) SessionUtil.getInstance().getValue(request, "User");
 			Map<String, String> map = null;
 			if (option.equalsIgnoreCase("add")) {
-				map = classifyService.insert(model);
+				model.setCreateBy(user.getId());
+				map = addProcess(request);
 			} else if (option.equalsIgnoreCase("edit")) {
-				map = classifyService.update(model, model.getId());
-				request.setAttribute("id", model.getId());
+				model.setUpdateBy(user.getId());
+				map = editProcess(request);
+			} else if (option.equalsIgnoreCase("delete")) {
+				map = deleteProcess(request);
 			}
-
 			Set<String> set = map.keySet();
-
+			String alert = "";
+			String message = "";
 			for (String key : set) {
-				request.setAttribute("alert", key);
-				request.setAttribute("message", map.get(key));
+				alert = key;
+				message = map.get(key);
 			}
 
+			request.setAttribute("alert", alert);
+			request.setAttribute("message", message);
 			request.setAttribute("listCategory", categoryService.findAllByStatus("active"));
 			request.setAttribute("classifyModel", model);
+			request.getRequestDispatcher(url).forward(request, response);
 
-			request.getRequestDispatcher(getPageCategory(request.getServletPath())).forward(request, response);
 		} else {
 			doGet(request, response);
 		}
 	}
+	
+	private ClassifyModel getModelFromForm(HttpServletRequest request) {
+		ClassifyModel model = new ClassifyModel();
+		if(request.getParameter("id") != null) model.setId(request.getParameter("id"));
+		model.setName(request.getParameter("classify_name"));
+		model.setStatus(request.getParameter("status"));
+		model.setCategoryAlias(request.getParameter("category"));
+		return model;
+	}
 
-	private String getPageCategory(String type) {
-		String url = null;
-		type = Utils.getUrlPatterns(type);
-		if (type.equalsIgnoreCase("admin-classify-add")) {
-			url = "view/admin/classify/add.jsp";
-		} else if (type.equalsIgnoreCase("admin-classify-list")) {
-			url = "view/admin/classify/list.jsp";
-		} else if (type.equalsIgnoreCase("admin-classify-edit")) {
-			url = "view/admin/classify/edit.jsp";
+	private void getPageAdd(HttpServletRequest request) {
+		request.setAttribute("listCategory", categoryService.findAllByStatus("active"));
+		url = SystemContain.URL_PAGE_CLASSIFY_ADD;
+	}
+
+	private void getPageList(HttpServletRequest request) {
+		List<CategoryModel> listCategory = categoryService.findAllByStatus("active");
+		String categoryAlias = request.getParameter("category");
+		String status = request.getParameter("status");
+		if (categoryAlias != null && status != null) {
+			request.setAttribute("category", categoryAlias);
+			request.setAttribute("status", status);
+			request.setAttribute("listClassify", classifyService.findAllByCategoryAliasAndStatus(categoryAlias, status));
+		} else {
+			if (listCategory.size() != 0) {
+				request.setAttribute("category", listCategory.get(0).getAlias());
+				request.setAttribute("status", "active");
+				request.setAttribute("listClassify", classifyService.findAllByCategoryAliasAndStatus(listCategory.get(0).getAlias(), "active"));
+			}
 		}
-		return url;
+		request.setAttribute("listCategory", listCategory);
+		url = SystemContain.URL_PAGE_CLASSIFY_LIST;
+	}
+
+	private void getPageEdit(HttpServletRequest request) {
+		if (request.getParameter("id") != null) {
+			request.setAttribute("listCategory", categoryService.findAllByStatus("active"));
+			request.setAttribute("classifyModel", classifyService.findOneById(request.getParameter("id")));
+			url = SystemContain.URL_PAGE_CLASSIFY_EDIT;
+		} else {
+			isUseSendRedirect = true;
+		}
+	}
+
+	private void getPageView(HttpServletRequest request) {
+		request.setAttribute("classifyModel", classifyService.findOneById(request.getParameter("id")));
+		url = SystemContain.URL_PAGE_CLASSIFY_VIEW;
+	}
+
+	private Map<String, String> deleteProcess(HttpServletRequest request) {
+		url = "view/admin/delete.jsp";
+		String id [] = request.getParameter("id").split(",");
+		if(id!= null && id.length == 1) {
+			return classifyService.delete(id[0]);
+		}
+		else {
+			return classifyService.deleteAll(id);
+		}
+	}
+
+	private Map<String, String> addProcess(HttpServletRequest request) {
+		url = SystemContain.URL_PAGE_CLASSIFY_ADD;
+		return classifyService.insert(model);
+	}
+
+	private Map<String, String> editProcess(HttpServletRequest request) {
+		url = SystemContain.URL_PAGE_CLASSIFY_EDIT;
+		return classifyService.update(model, model.getId());
 	}
 }

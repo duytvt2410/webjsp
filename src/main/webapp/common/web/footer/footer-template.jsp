@@ -96,3 +96,73 @@
 			<!-- /bottom footer -->
 		</footer>
 		<!-- /FOOTER -->
+		
+<div id="notificationModal" class="modal fade">
+	<div class="modal-dialog modal-confirm">
+		<div class="modal-content">
+			<div class="modal-header">	
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+			</div>
+			<%
+				if(request.getAttribute("alert") != null) {
+			%>
+			<div class="text-center">
+			
+				<%
+					if(request.getAttribute("alert").equals("success")) {
+				%>
+					<h1><i class="fa fa-check-circle text-success"></i></h1>
+				<%
+					} else if(request.getAttribute("alert").equals("danger")) {
+				%>
+					<h1><i class="fa fa-times-circle text-danger"></i></h1>
+				<%
+					} 
+				%>
+					<h5 class="modal-title"><%=request.getAttribute("message") %></h5>	
+			</div>			
+			
+			<div class="modal-footer">
+				<%
+					if(request.getAttribute("alert").equals("success")) {
+						
+						
+				%>
+						<button type="button" class="btn btn-secondary" onclick="window.location = window.location.href.split('?')[0];">Đóng</button>	
+				<%
+					} else {
+				%>
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>		
+				<%
+					} 
+				%>
+			</div>
+		<%
+			}
+		%>
+		</div>
+	</div>
+</div> 
+
+<div id="notificationAddItemCartModal" class="modal fade">
+	<div class="modal-dialog modal-confirm modal-sm">
+		<div class="modal-content">
+			<div class="modal-header">	
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+			</div>
+			<div class="text-center">
+					<h1><i class="fa fa-check-circle text-success"></i></h1>
+					<h5>Đã thêm vào giỏ</h5>
+					<br>
+					<a href="<%= request.getContextPath() + "/giohang"%>" class="btn btn-primary">Kiểm tra giỏ</a>	
+			</div>			
+			
+			<div class="modal-footer">
+				
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>		
+				
+			</div>
+		
+		</div>
+	</div>
+</div> 

@@ -5,12 +5,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import dao.IClassifyDAO;
 import dao.imp.ClassifyDAO;
 import model.ClassifyModel;
 import service.ICategoryService;
 import service.IClassifyService;
+import service.IProductClassifyService;
 import utils.SystemContain;
 import utils.Utils;
 import utils.Valid;
@@ -18,6 +20,8 @@ import utils.Valid;
 public class ClassifyService implements IClassifyService{
 	
 	private IClassifyDAO classifyDAO = ClassifyDAO.getInstance();
+	
+	private IProductClassifyService productClassify = ProductClassifyService.getInstance();
 	
 	private ICategoryService categoryService = CategoryService.getInstance();
 
@@ -37,8 +41,7 @@ public class ClassifyService implements IClassifyService{
 	}
 
 	@Override
-	public List<ClassifyModel> findAllByCategoryId(int id) {
-		// TODO Auto-generated method stub
+	public List<ClassifyModel> findAllByCategoryId(String id) {
 		return null;
 	}
 
@@ -55,7 +58,7 @@ public class ClassifyService implements IClassifyService{
 	}
 
 	@Override
-	public ClassifyModel findOneById(Long id) {
+	public ClassifyModel findOneById(String id) {
 		
 		return classifyDAO.findOneById(id);
 	}
@@ -97,11 +100,13 @@ public class ClassifyService implements IClassifyService{
 
 		model.setStatus("active");
 		model.setCreateDate(timestamp);
-		model.setCreateBy("admin");
 		model.setUpdateDate(null);
 		model.setUpdateBy("");
-		Date id = new Date();
-		model.setId(id.getTime());
+		Random rand = new Random();
+		String id = String.valueOf(rand.nextInt(101) + 100);
+		
+		id += String.valueOf(new Date().getTime());
+		model.setId(id);
 		
 		if(classifyDAO.insert(model) == true) {
 			map.put("success", "Thêm thành công.");
@@ -113,7 +118,7 @@ public class ClassifyService implements IClassifyService{
 	}
 
 	@Override
-	public Map<String, String> update(ClassifyModel model, Long id) {
+	public Map<String, String> update(ClassifyModel model, String id) {
 		Map<String, String> map = new HashMap<String, String>();
 		ClassifyModel oldModel = findOneById(id);
 		
@@ -156,7 +161,6 @@ public class ClassifyService implements IClassifyService{
 		
 		if(model.getStatus() == null) model.setStatus(oldModel.getStatus());
 		model.setUpdateDate(timestamp);
-		model.setUpdateBy("admin");
 		
 		if(classifyDAO.update(model, model.getId()) == true) {
 			map.put("success", "Sửa thành công.");
@@ -183,6 +187,52 @@ public class ClassifyService implements IClassifyService{
 			return findAllByStatus(status);
 		}
  		return classifyDAO.findAllByCategoryAliasAndStatus(categoryAlias, status);
+	}
+
+
+	@Override
+	public Map<String, String> delete(String id) {
+		Map<String, String> map = new HashMap<String, String>();
+		if(productClassify.findAllByClassifyId(id) != null) {
+			ClassifyModel model = classifyDAO.findOneById(id);
+			map.put("danger", model.getName() + " có liên kết với sản phẩm. Không thể xóa");
+		} else {
+			if(classifyDAO.delete(id)) {
+				map.put("success", "Xóa thành công");
+			} else {
+				map.put("danger"," Thất bại. Vui lòng thử lại");
+			}
+		}
+		
+		
+		return map;
+	}
+
+
+	@Override
+	public Map<String, String> deleteAll(String[] id) {
+		Map<String, String> map = new HashMap<String, String>();
+		boolean isSuccess = true;
+		String modelFail = "";
+		for(String i : id ) {
+			if(productClassify.findAllByClassifyId(i) != null) {
+				ClassifyModel model = classifyDAO.findOneById(i);
+				modelFail += model.getName() + ", ";
+				isSuccess = false;
+			} else {
+				if(classifyDAO.delete(i)) {
+					map.put("success", "Xóa thành công");
+				} else {
+					map.put("danger"," Thất bại. Vui lòng thử lại");
+				}
+			}
+		}
+		if(isSuccess == true) {
+			map.put("success", "Xóa thành công");
+		} else {
+			map.put("danger", modelFail +  " có liên kết với sản phẩm. Không thể xóa");
+		}
+		return map;
 	}
 
 }

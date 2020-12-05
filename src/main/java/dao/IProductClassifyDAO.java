@@ -7,9 +7,10 @@ import model.ProductClassifyModel;
 public interface IProductClassifyDAO {
 	
 	boolean insert(ProductClassifyModel model);
-	boolean update(ProductClassifyModel model, Long id);
-	boolean deleteByProductId(Long id);
+	boolean update(ProductClassifyModel model, String id);
+	boolean deleteByProductId(String id);
 	
-	List<ProductClassifyModel> findAllByProductId(Long id);
+	List<ProductClassifyModel> findAllByProductId(String id);
+	List<ProductClassifyModel> findAllByClassifyId(String id);
 	
 }

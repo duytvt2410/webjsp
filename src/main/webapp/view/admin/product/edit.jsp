@@ -54,7 +54,7 @@
                     </a>
                     <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
                       <div class="dropdown-header">Lựa chọn khác:</div>
-                      <a class="dropdown-item" href="#">Xem danh sách các nhóm sản phẩm</a>
+                      <a class="dropdown-item" href="<%=request.getContextPath() + "/admin-product-list" %>">Xem danh sách sản phẩm</a>
                     </div>
                   </div>
                 </div>
@@ -153,23 +153,23 @@
 					    </div>
 					    <div class="form-group">
 					    <label for="image" class="text-primary font-weight-bold">Ảnh sản phẩm:</label>
-						<input id="image" class="form-control" name="file-image" type="file" accept="image/*">
+						<div id="dropzoneFromOne" class="dropzone"></div>
 							<div id="showImage">
 								<% if(product != null ) { %>
-								<img style="height: 70px" width="auto" src="data:image/jpg;base64,<%=product.getImageProduct().getBase64Image() %>" class="img-thumbnail">
+								<img style="height: 70px" width="auto" src="<%=(product.getUrlImageProduct() != null ? Utils.getPathImage(product.getUrlImageProduct()) : "")%>" class="img-thumbnail">
 								<%} %>
 							</div>
 							
 						</div><br>
 						<div class="form-group">
 					    <label for="detail-image" class="text-primary font-weight-bold">Ảnh chi tiêt:</label>
-						<input id="detail-image" class="form-control" name="file-images" type="file" multiple accept="image/*">
+						<div id="dropzoneFrom" class="dropzone"></div>
 							<div id="showImages">
-								<% if(product != null) { 
-									for(ImagesModel images : product.getImagesDetail()) {
+								<% if(product != null && product.getUrlImagesDetail() != null) { 
+									for(String images : product.getUrlImagesDetail()) {
 								%>
 									
-								<img style="height: 70px" width="auto" src="data:image/jpg;base64,<%=images.getBase64Image() %>" class="img-thumbnail">
+								<img style="height: 70px" width="auto" src="<%= Utils.getPathImage(images) %>" class="img-thumbnail">
 								<%	} 
 									}
 								%>
@@ -203,8 +203,10 @@
 								CKEDITOR.replace( 'description' );
 							 </script>  
 						</div>
+						<input type="hidden" name="file-images" id="file-images">
+						<input type="hidden" name="file-image" id="file-image">
 					    <input type="hidden" value="edit" name="option">
-					     <input type="hidden" value="<%=product.getId() %>" name="id">
+					    <input type="hidden" value="<%=product.getId() %>" name="id">
 					    <button type="submit" class="btn btn-primary">Sửa</button>
 					  </form>
 					</div>
@@ -241,58 +243,6 @@ function getBrand(category, brand, classify){
 	});	
 }
 
-
-function displayImage() {
-
-	  var $preview = $('#showImage').empty();
-	  if (this.files) $.each(this.files, readAndPreview);
-	
-	  function readAndPreview(i, file) {
-	    if(i == 1) {
-	    	$("#image").val('');
-		      return alert("Vượt quá số ảnh");
-	    }
-	    if (!/\.(jpe?g|png|gif)$/i.test(file.name)){
-	    	$("#image").val('');
-	      return alert(file.name +" không phải file ảnh");
-	    } 
-	    
-	    var reader = new FileReader();
-
-	    $(reader).on("load", function() {
-	      $preview.append($("<img/>", {src:this.result, height:70, 'class':'img-thumbnail'}));
-	    });
-
-	    reader.readAsDataURL(file);
-	    
-	  }
-
-	}
-	
-function displayImages() {
-
-	  var $preview = $('#showImages').empty();
-	  if (this.files) $.each(this.files, readAndPreview);
-
-	  function readAndPreview(i, file) {
-	    
-		  if (!/\.(jpe?g|png|gif)$/i.test(file.name)){
-		    	$("#detail-image").val('');
-		      return alert(file.name +" không phải file ảnh");
-		    } // else...
-		    
-		    var reader = new FileReader();
-
-		    $(reader).on("load", function() {
-		      $preview.append($("<img/>", {src:this.result, height:70, 'class':'img-thumbnail'}));
-		    });
-
-		    reader.readAsDataURL(file);
-	    
-	  }
-
-	}
-	
 	function convertToVND(money) {
 		var res = 0;
 		if(money == "") {
@@ -327,10 +277,80 @@ function displayImages() {
 		  	var money = $( "#price" ).val();
 			 $( "#price" ).val(convertToVND(money));
 	  }
+	  
+	  Dropzone.options.dropzoneFrom = {
+	  url: '<%= Utils.getUrlUploadImage("FileUploadServlet")%>',
+	  addRemoveLinks: true,
+	  parallelUploads: 1000,
+	  maxThumbnailFilesize: 100,
+	  autoProcessQueue: true,
+	  acceptedFiles:".png,.jpg,.gif,.bmp,.jpeg",
+	  init: function() {
+		  this.on("complete", function (file) {
+	          var oldName = $("#file-images").val();
+	          if(oldName == "") {
+	        	  $( "#file-images" ).val(file.name);
+	          } else {
+	        	  $( "#file-images" ).val(oldName + "dt14082410dt" + file.name);
+	          }
+	          
+	       });
+	      this.on("removedfile", function (file) {
+	         $.ajax({
+	           url: '<%= Utils.getUrlUploadImage("DeleteFile?name=")%>' + file.name,
+	           type: 'GET'
+	       });
+	         var arr = $("#file-images").val().split('dt14082410dt');
+	         var l = arr.length;
+	         for(var i = 0; i < arr.length; i++) {
+				 if(arr[i] == file.name) {
+					 arr.splice(i, 1);
+					 l--;
+					 break;
+	        	 }
+	         }
+	         var res = "";
+	         for(var i = 0; i < arr.length; i++) {
+	        	 if(i + 1 == arr.length) {
+	        		 res += arr[i];
+	        	 } else {
+	        		 res += arr[i] + "dt14082410dt";
+	        	 }
+	        	 
+	         }
+	         $( "#file-images" ).val(res);
+	      });
+
+	}
+	 };
+	 
+	 Dropzone.options.dropzoneFromOne = {
+			  url: '<%= Utils.getUrlUploadImage("FileUploadServlet")%>',
+			  addRemoveLinks: true,
+			  parallelUploads: 1000,
+			  maxThumbnailFilesize: 100,
+			  autoProcessQueue: true,
+			  acceptedFiles:".png,.jpg,.gif,.bmp,.jpeg",
+			  maxFiles: 1,
+			  init: function() {
+					  this.on("maxfilesexceeded", function(file) {
+				            this.removeAllFiles();
+				            this.addFile(file);
+				      });
+					  this.on("complete", function (file) {
+				          $("#file-image").val(file.name);
+				      });
+			        this.on("removedfile", function (file) {
+			            
+			                $.ajax({
+			                    url: '<%= Utils.getUrlUploadImage("DeleteFile?name=")%>' + file.name,
+			                    type: 'GET'
+			                });
+			            
+			        });
+			  }
+	 };
 	});
-	
-	$('#image').on("change", displayImage);
-	$('#detail-image').on("change", displayImages);
 	
 	$('#price').on('input', function() {
 		var money = $( "#price" ).val();

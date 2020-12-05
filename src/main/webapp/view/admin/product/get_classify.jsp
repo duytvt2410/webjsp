@@ -19,11 +19,10 @@
 			return c1.getName().compareTo(c2.getName());
 		}
 	});
-	String empty = (String) request.getAttribute("empty");
 %>
 <label for="classify" class="text-primary font-weight-bold">Nhóm sản phẩm:</label>
 
-<div style="height: <%=(listClassify.size() != 0 ? "200px" : "30px") %>; overflow: auto">
+<div style="max-height: 300px; overflow: auto; border: 1px solid; border-radius: 10px; padding: 15px">
 	<%
 	if (idClassify == "") {
 		if (listClassify.size() != 0) {
@@ -38,8 +37,10 @@
 	<%
 						}
 						
-	%>
-			<input type="checkbox" class="ml-3" value="<%=classify.getId()%>" name="classify"><%=nameSplit[1] %> <br>
+	%>		
+	<input type="checkbox" id="<%=classify.getId() %>" class="ml-3" value="<%=classify.getId()%>" name="classify">
+	<label for="<%=classify.getId() %>"><%=nameSplit[1] %></label> <br>
+			
 
 	<%
 				}
@@ -57,17 +58,19 @@
 					}
 				boolean kt = false;
 				for (String c : idClassifyChoose) {
-					if (classify.getId() == Long.parseLong(c)) {
+					if (classify.getId().equals(c)) {
 						kt = true;
 	%>
-					<input type="checkbox" class="ml-3" checked value="<%=classify.getId()%>" name="classify"><%=classify.getName()%> <br>
+					<input type="checkbox" checked id="<%=classify.getId() %>" class="ml-3" value="<%=classify.getId()%>" name="classify">
+					<label for="<%=classify.getId() %>"><%=nameSplit[1] %></label> <br>
 	<%
 					}
 
 				}
 					if (kt == false) {
 	%>
-					<input type="checkbox" class="ml-3" value="<%=classify.getId()%>" name="classify"><%=classify.getName()%> <br>
+					<input type="checkbox" id="<%=classify.getId() %>" class="ml-3" value="<%=classify.getId()%>" name="classify">
+					<label for="<%=classify.getId() %>"><%=nameSplit[1] %></label> <br>
 	<%
 					}
 			}

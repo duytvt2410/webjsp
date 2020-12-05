@@ -44,7 +44,7 @@ private static CategoryDAO categoryDao = null;
 	}
 
 	@Override
-	public boolean update(CategoryModel model, Long id) {
+	public boolean update(CategoryModel model, String id) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("UPDATE category");
 		sql.append(" SET name = ?, alias = ?, status = ?, is_accessories = ?, updated_date = ?, updated_by = ?");
@@ -54,7 +54,7 @@ private static CategoryDAO categoryDao = null;
 	}
 
 	@Override
-	public CategoryModel findOneById(Long id) {
+	public CategoryModel findOneById(String id) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("SELECT * FROM category");
 		sql.append(" WHERE id = ?");
@@ -85,7 +85,7 @@ private static CategoryDAO categoryDao = null;
 	}
 
 	@Override
-	public boolean delete(Long id) {
+	public boolean delete(String id) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("DELETE FROM category");
 		sql.append(" WHERE id = ?;");

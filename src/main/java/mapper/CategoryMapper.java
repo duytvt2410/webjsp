@@ -12,7 +12,7 @@ public class CategoryMapper implements RowMapper<CategoryModel> {
 		CategoryModel model = new CategoryModel();
 		
 		try {
-			model.setId(resultSet.getLong("id"));
+			model.setId(resultSet.getString("id"));
 			model.setName(resultSet.getString("name"));
 			model.setAlias(resultSet.getString("alias"));
 			model.setStatus(resultSet.getString("status"));

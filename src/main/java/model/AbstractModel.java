@@ -2,19 +2,22 @@ package model;
 
 import java.sql.Timestamp;
 
+import service.IUserService;
+import service.imp.UserService;
+
 public class AbstractModel {
-	private Long id;
+	private String id;
 	private String name;
 	private String alias;
 	private String status;
 	private String createBy, updateBy;
 	private Timestamp createDate, updateDate;
-
-	public Long getId() {
+	private IUserService userService = UserService.getInstance();
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
@@ -72,6 +75,18 @@ public class AbstractModel {
 
 	public void setUpdateDate(Timestamp updateDate) {
 		this.updateDate = updateDate;
+	}
+
+	public String getNameCreateBy(String id) {
+		UserModel user = userService.findOneById(id);
+		if (user == null) return "";
+		return user.getFullName();
+	}
+
+	public String getNameUpdateBy(String id) {
+		UserModel user = userService.findOneById(id);
+		if (user == null) return "";
+		return user.getFullName();
 	}
 
 	

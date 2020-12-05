@@ -12,10 +12,11 @@ public class ImagesMapper implements RowMapper<ImagesModel> {
 		ImagesModel model = new ImagesModel();
 		
 		try {
-			model.setId(resultSet.getLong("id"));
+			model.setId(resultSet.getString("id"));
 			model.setType(resultSet.getString("type"));
-			model.setProduct_Id(resultSet.getLong("product_id"));
-			model.setByteImage(resultSet.getBytes("photo"));
+			model.setName(resultSet.getString("name"));
+			model.setProduct_Id(resultSet.getString("product_id"));
+			model.setPhoto(resultSet.getString("photo"));
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			return null;

@@ -11,8 +11,9 @@ public interface ICategoryService {
 	List<CategoryModel> findAllByStatus(String status);
 	List<CategoryModel> findAllByIsAccessoriesAndStatus(String isAccessories, String status);
 	CategoryModel findOneByAlias(String alias);
-	CategoryModel findOneById(Long id);
+	CategoryModel findOneById(String id);
 	Map<String, String> insert(CategoryModel model);
-	Map<String, String> update(CategoryModel model, Long id);
-	Map<String, String> delete(Long id);
+	Map<String, String> update(CategoryModel model, String id);
+	Map<String, String> delete(String id);
+	Map<String, String> deleteAll(String[] id);
 }

@@ -7,12 +7,14 @@ import model.ClassifyModel;
 
 public interface IClassifyService {
 	List<ClassifyModel> findAll();
-	List<ClassifyModel> findAllByCategoryId(int id);
+	List<ClassifyModel> findAllByCategoryId(String id);
 	List<ClassifyModel> findAllByStatus(String status);
 	List<ClassifyModel> findAllByCategoryAlias(String status);
 	List<ClassifyModel> findAllByCategoryAliasAndStatus(String categoryAlias, String status);
 	ClassifyModel findOneByAlias(String alias);
-	ClassifyModel findOneById(Long id);
+	ClassifyModel findOneById(String id);
 	Map<String, String> insert(ClassifyModel model);
-	Map<String, String> update(ClassifyModel model, Long id);
+	Map<String, String> update(ClassifyModel model, String id);
+	Map<String, String> delete(String id);
+	Map<String, String> deleteAll(String[] id);
 }

@@ -6,13 +6,13 @@ import model.ClassifyModel;
 
 public interface IClassifyDAO {
 	List<ClassifyModel> findAll(); 
-	List<ClassifyModel> findAllByCategoryId(int id);
+	List<ClassifyModel> findAllByCategoryId(String id);
 	List<ClassifyModel> findAllByStatus(String status);
 	List<ClassifyModel> findAllByCategoryAlias(String categoryAlias);
 	List<ClassifyModel> findAllByCategoryAliasAndStatus(String categoryAlias, String status);
 	ClassifyModel findOneByAlias(String alias);
-	ClassifyModel findOneById(Long id);
+	ClassifyModel findOneById(String id);
 	boolean insert(ClassifyModel model);
-	boolean update(ClassifyModel model, Long id);
-	
+	boolean update(ClassifyModel model, String id);
+	boolean delete(String id);
 }
